@@ -1,154 +1,103 @@
 version: 2
 
 references:
-  image_name: &image_name organization-name/project-name
+    container_config: &container_config
+        docker:
+            - image: circleci/python:3.6-stretch
+              environment:
+                  DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/app
+
+            - image: circleci/postgres:10
+              environment:
+                  POSTGRES_USER: postgres
+                  POSTGRES_PASSWORD: postgres
+                  POSTGRES_DB: app
+
+    install_python_requirements: &install_python_requirements
+        run:
+            name: Install python requirements
+            command: |
+                python3 -m venv venv
+                sudo pip install -r requirements/base.txt
+                sudo pip install -r requirements/test.txt
+
+    restore_repo: &restore_repo
+        restore_cache:
+            keys:
+                - v1-repo-{{ .Branch }}-{{ .Revision }}
+    run_code_formatter: &run_code_formatter
+        run:
+            command: |
+              python3 -m venv venv
+              . venv/bin/activate
+              sudo pip install -r requirements/dev.txt
+              black --check src/
+
+    run_tests: &run_tests
+        run:
+          name: Running tests with coverage
+          command: |
+              python src/manage.py collectstatic --no-input
+              coverage erase
+              pytest -n 4
+
+    install_heroku_cli: &install_heroku_cli
+        run:
+          name: Install Heroku-CLI
+          command: |
+              wget https://cli-assets.heroku.com/branches/stable/heroku-linux-amd64.tar.gz
+              sudo mkdir -p /usr/local/lib /usr/local/bin
+              sudo tar -xvzf heroku-linux-amd64.tar.gz -C /usr/local/lib
+              sudo ln -s /usr/local/lib/heroku/bin/heroku /usr/local/bin/heroku
+
+    deploy_heroku: &deploy_heroku
+        run:
+          name: Deploy
+          command: |
+              bash .circleci/setup-heroku.sh
+              git push git@heroku.com:covid19-backend-br.git $CIRCLE_SHA1:refs/heads/master && heroku run python src/manage.py migrate --noinput --app covid19-backend-br
 
 jobs:
-  python_linter:
-    docker:
-      - image: circleci/python:3.8.0b1-stretch
-    steps:
-      - checkout
-      - run: sudo pip install black
-      - run: black --check .
-  build:
-    machine:
-      docker_layer_caching: true
-    environment:
-      IMAGE_NAME: *image_name
-    steps:
-      - checkout
-      - run:
-          name: Build Docker image
-          command: |
-            docker build -t $IMAGE_NAME:latest .
-      - run:
-          name: Archive Docker image
-          command: docker save -o image.tar $IMAGE_NAME
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./image.tar
-  tests:
-    machine:
-      image: circleci/classic:201808-01
-    environment:
-        IMAGE_NAME: *image_name
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp/workspace
-      - run:
-          name: Load archived Docker image
-          command: docker load -i /tmp/workspace/image.tar
-      - run: docker-compose -f docker-compose.test.yml up --exit-code-from web
-      - store_artifacts:
-          path: coverage.xml
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./coverage.xml
-  analysis_codeclimate:
-    docker:
-      - image: circleci/python:3.8.0b1-stretch
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp/workspace
-      - run:
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-      - run: cp /tmp/workspace/coverage.xml ./coverage.xml
-      - run:
-          name: Upload coverage results to Code Climate
-          command: |
-            ./cc-test-reporter format-coverage -t coverage.py -o codeclimate.json
-            ./cc-test-reporter upload-coverage -i codeclimate.json
-      - store_artifacts:
-          path: codeclimate.json
-  release:
-    docker:
-      - image: circleci/python:3.8.0b1-stretch
-    environment:
-      IMAGE_NAME: *image_name
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp/workspace
-      - setup_remote_docker
-      - run:
-          name: Load archived Docker image
-          command: docker load -i /tmp/workspace/image.tar
-      - run: sudo pip install awscli --upgrade
-      - run: eval $(aws ecr get-login --region ${AWS_DEFAULT_REGION} | sed 's|https://||' | sed 's|-e none ||')
-      - run: bash scripts/release.sh $CIRCLE_BRANCH
-  deploy:
-    docker:
-      - image: circleci/python:3.8.0b1-stretch
-    steps:
-      - checkout
-      - run:
-          name: Installing awscli
-          command: |
-            sudo apt-get install jq
-            sudo pip install --upgrade setuptools awscli awsebcli
-            curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy | sudo tee /usr/bin/ecs-deploy
-            sudo chmod +x /usr/bin/ecs-deploy
-      - run: eval $(aws ecr get-login --region ${AWS_DEFAULT_REGION} | sed 's|https://||' | sed 's|-e none ||')
-      - run:
-          name: Deploying AWS ECS
-          command: bash scripts/deploy.sh $CIRCLE_BRANCH
-          no_output_timeout: 30m
+    test:
+        <<: *container_config
+        steps:
+            - *restore_repo
+            - checkout
+            - save_cache:
+                key: v1-repo-{{ .Branch }}-{{ .Revision }}
+                paths:
+                    - .
+            - *install_python_requirements
+            - *run_code_formatter
+            - *run_tests
+    prod:
+        <<: *container_config
+        steps:
+            - *restore_repo
+            - *install_heroku_cli
+            - *deploy_heroku
 
 workflows:
-  version: 2
-  untagged-build:
-    jobs:
-      - python_linter:
-          filters:
-            branches:
-              ignore: /hotfix.*/
-      - build:
-          requires:
-            - python_linter
-          filters:
-            branches:
-              ignore: /hotfix.*/
-      - tests:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore: /hotfix.*/
-      - analysis_codeclimate:
-          requires:
-            - tests
-          filters:
-            branches:
-              ignore: /hotfix.*/
-      - release:
-          requires:
-            - analysis_codeclimate
-          filters:
-            branches:
-              only:
-                - master
-                - staging
-                - lab
-      - deploy:
-          requires:
-            - release
-          filters:
-            branches:
-              only:
-                - staging
-                - lab
-  tagged-build:
-    jobs:
-      - deploy:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+    version: 2
+    run_tests:
+        jobs:
+            - test:
+                filters:
+                    tags:
+                        ignore: /^v.*/
+    tagged-build:
+        jobs:
+            - test:
+                filters:
+                    tags:
+                        only: /^v.*/
+                    branches:
+                        ignore: /.*/
+            - prod:
+                requires:
+                    - test
+                filters:
+                    tags:
+                        only: /^v.*/
+                    branches:
+                        ignore: /.*/
