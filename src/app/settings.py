@@ -42,9 +42,13 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "versatileimagefield",
     "drf_yasg",
+    "django_extensions",
 ]
 
-PROJECT_APPS = ["users"]
+PROJECT_APPS = [
+    "users",
+    "rules",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
