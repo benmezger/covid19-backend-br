@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "versatileimagefield",
+    "drf_yasg",
 ]
 
 PROJECT_APPS = ["users"]
