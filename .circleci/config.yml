@@ -50,12 +50,21 @@ references:
               sudo tar -xvzf heroku-linux-amd64.tar.gz -C /usr/local/lib
               sudo ln -s /usr/local/lib/heroku/bin/heroku /usr/local/bin/heroku
 
+    deploy_heroku_staging: &deploy_heroku_staging
+        run:
+          name: Deploy
+          command: |
+              bash .circleci/setup-heroku.sh
+              git push git@heroku.com:$HEROKU_APP_NAME_STAGING.git $CIRCLE_SHA1:refs/heads/master
+              heroku run python src/manage.py migrate --noinput --app $HEROKU_APP_NAME_STAGING
+
     deploy_heroku: &deploy_heroku
         run:
           name: Deploy
           command: |
               bash .circleci/setup-heroku.sh
-              git push git@heroku.com:covid19-backend-br.git $CIRCLE_SHA1:refs/heads/master && heroku run python src/manage.py migrate --noinput --app covid19-backend-br
+              git push git@heroku.com:$HEROKU_APP_NAME.git $CIRCLE_SHA1:refs/heads/master
+              heroku run python src/manage.py migrate --noinput --app $HEROKU_APP_NAME
 
 jobs:
     test:
@@ -70,6 +79,12 @@ jobs:
             - *install_python_requirements
             - *run_code_formatter
             - *run_tests
+    staging:
+        <<: *container_config
+        steps:
+            - *restore_repo
+            - *install_heroku_cli
+            - *deploy_heroku_staging
     prod:
         <<: *container_config
         steps:
@@ -85,6 +100,18 @@ workflows:
                 filters:
                     tags:
                         ignore: /^v.*/
+    untagged-build:
+        jobs:
+            - test:
+                filters:
+                    branches:
+                        only: staging
+            - staging:
+                requires:
+                    - test
+                filters:
+                    branches:
+                        only: staging
     tagged-build:
         jobs:
             - test:

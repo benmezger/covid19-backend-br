@@ -1,5 +1,5 @@
 import os
-from os.path import dirname, join, exists, abspath
+from os.path import abspath, dirname, exists, join
 
 import environ
 
@@ -41,14 +41,11 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "versatileimagefield",
-    "drf_yasg",
     "django_extensions",
+    "drf_yasg",
 ]
 
-PROJECT_APPS = [
-    "users",
-    "rules",
-]
+PROJECT_APPS = ["tracking", "users", "rules"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
