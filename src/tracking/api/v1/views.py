@@ -83,18 +83,14 @@ class PersonViewSet(
 
 
 # Generic view. No need to overwrite anything
-class RiskFactorViewSet(
-    mixins.ListModelMixin, viewsets.GenericViewSet
-):
+class RiskFactorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = RiskFactor.objects.all()
     serializer_class = RiskFactorSerializer
     permission_classes = (AllowAny,)
 
 
 # Generic view. No need to overwrite anything
-class SymptomViewSet(
-        mixins.ListModelMixin, viewsets.GenericViewSet
-    ):
+class SymptomViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Symptom.objects.all()
     serializer_class = SymptomSerializer
     permission_classes = (AllowAny,)
