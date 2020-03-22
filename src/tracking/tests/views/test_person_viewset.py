@@ -2,7 +2,7 @@ import json
 
 from django.urls import reverse
 
-from tracking.models import Person, PersonStatusChange
+from tracking.models import Person, PersonStatusChange, PersonSymptomReport
 
 
 def test_person_create(client, db, make_risk_factor):
@@ -99,3 +99,40 @@ def test_person_update(client, db, make_person, make_user):
     assert person_status_change.next == "C"
     assert person_status_change.previous == "D"
     assert person_status_change.health_professional == user
+
+
+def test_person_update_unexisting_user(client, db, make_person, make_user):
+    user = make_user()
+    person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+
+    payload = {"status": "C"}
+
+    response = client.patch(
+        reverse("person-detail", kwargs={"pk": "wrong_id"}),
+        data=payload,
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Token {user.token}",
+    )
+
+    assert response.status_code == 404
+
+
+def test_person_create_person_symptons(
+    client, db, make_person, make_symptom, make_user
+):
+    person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+    symptom_1 = make_symptom("Diarreia")
+    symptom_2 = make_symptom("Dor de cabeça")
+    user = make_user()
+
+    payload = {"symptoms_ids": [symptom_1.id, symptom_2.id]}
+
+    response = client.post(
+        reverse("person-symptoms-report", kwargs={"pk": person.beacon_id}),
+        data=payload,
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Token {user.token}",
+    )
+
+    assert response.status_code == 201
+    assert PersonSymptomReport.objects.count() == 2

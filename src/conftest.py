@@ -5,6 +5,7 @@ from tracking.models import (
     Person,
     PersonStatusChange,
     RiskFactor,
+    Symptom,
     UNKNOWN,
     SUSPECT,
     RECOVERED,
@@ -66,3 +67,11 @@ def make_risk_factor(db):
         return RiskFactor.objects.create(name=name)
 
     yield _make_risk_factor
+
+
+@pytest.fixture
+def make_symptom(db):
+    def _make_symptom(name="Diarreia"):
+        return Symptom.objects.create(name=name)
+
+    yield _make_symptom
