@@ -44,5 +44,26 @@ class PersonStatusChange(TimeStampedModel):
         "users.User", on_delete=models.SET_NULL, null=True, blank=True
     )
 
+class PersonRiskFactor(TimeStampedModel):
+    person = models.ForeignKey(
+        "tracking.Person", on_delete=models.CASCADE, related_name="risk_factors"
+    )
+    risk_factor = models.ForeignKey(
+        "tracking.RiskFactor", on_delete=models.CASCADE, related_name="persons"
+    )
+
+    class Meta:
+        verbose_name_plural = "Person Risk Factors"
+
     def __str__(self):
-        return f"{self.person}: {self.previous} -> {self.next}"
+        return f"{self.person}: {self.risk_factor}"
+
+
+class RiskFactor(TimeStampedModel):
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name_plural = "Risk Factors"
+
+    def __str__(self):
+        return self.name
