@@ -27,6 +27,9 @@ class RuleCondition(TimeStampedModel):
         related_name="conditions",
     )
 
+    def __str__(self):
+        return f"Rule Condition: {self.rule}"
+
 
 class LogicalCondition(TimeStampedModel):
     rule_condition = models.ForeignKey(
@@ -55,3 +58,6 @@ class LogicalCondition(TimeStampedModel):
     value = models.CharField(
         max_length=100, null=False, blank=False, verbose_name="Valor",
     )
+
+    def __str__(self):
+        return f"Logical Condition: {self.rule_condition.rule}"
