@@ -71,16 +71,6 @@ def person_status_change_create(
 
 
 @transaction.atomic
-def risk_factors_get() -> Iterable[RiskFactor]:
-    return RiskFactor.objects.all()
-
-
-@transaction.atomic
-def symptoms_get() -> Iterable[Symptom]:
-    return Symptom.objects.all()
-
-
-@transaction.atomic
 def person_symptom_report_bulk_create(
     *, person: Person, symptoms_ids: List[int]
 ) -> Iterable[PersonSymptomReport]:

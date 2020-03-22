@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from tracking.models import Person
+from tracking.models import Person, RiskFactor, Symptom
 from tracking import services
 from tracking.api.v1.serializers import (
     PersonInputSerializer,
@@ -16,11 +16,11 @@ from tracking.api.v1.serializers import (
 
 
 class PersonViewSet(
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet,
+    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet
 ):
+    queryset = Person.objects.all()
     serializer_class = PersonInputSerializer
     permission_classes = (IsAuthenticated,)
-    queryset = Person.objects.all()  # just because Django asks for it
 
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
@@ -82,27 +82,15 @@ class PersonViewSet(
         return Response(status=status.HTTP_201_CREATED)
 
 
-class RiskFactorViewSet(
-    mixins.ListModelMixin, viewsets.GenericViewSet,
-):
+# Generic view. No need to overwrite anything
+class RiskFactorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = RiskFactor.objects.all()
     serializer_class = RiskFactorSerializer
     permission_classes = (AllowAny,)
 
-    def list(self, request, *args, **kwargs):
-        risk_factors = services.risk_factors_get()
-        return Response(
-            self.get_serializer(risk_factors, many=True).data, status=status.HTTP_200_OK
-        )
 
-
-class SymptomViewset(
-    mixins.ListModelMixin, viewsets.GenericViewSet,
-):
+# Generic view. No need to overwrite anything
+class SymptomViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Symptom.objects.all()
     serializer_class = SymptomSerializer
     permission_classes = (AllowAny,)
-
-    def list(self, request, *args, **kwargs):
-        symptoms = services.symptoms_get()
-        return Response(
-            self.get_serializer(symptoms, many=True).data, status=status.HTTP_200_OK
-        )
