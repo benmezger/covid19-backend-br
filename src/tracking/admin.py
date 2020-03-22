@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from tracking.models import Person, PersonRiskFactor, PersonStatusChange, RiskFactor
+from tracking.models import (
+    Person,
+    PersonRiskFactor,
+    PersonStatusChange,
+    RiskFactor,
+    Symptom,
+)
 
 
 @admin.register(PersonRiskFactor)
@@ -27,3 +33,11 @@ class PersonAdmin(admin.ModelAdmin):
     list_filter = ("status",)
 
     inlines = (PersonStatusChangeInline,)
+
+
+@admin.register(Symptom)
+class SymptomAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+    )

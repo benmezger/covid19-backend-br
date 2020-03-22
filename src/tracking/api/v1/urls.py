@@ -5,6 +5,7 @@ from . import views
 
 router = DefaultRouter()
 router.register("person", views.PersonViewSet, basename="person")
-router.register("risk-factor", views.RiskFactor, basename="risk-factor")
+router.register("risk-factor", views.RiskFactorViewSet, basename="risk-factor")
+router.register("symptom", views.SymptomViewset, basename="symptom")
 
 urlpatterns = [] + router.urls

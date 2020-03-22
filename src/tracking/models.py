@@ -68,7 +68,7 @@ class PersonRiskFactor(TimeStampedModel):
         return f"{self.person}: {self.risk_factor}"
 
 
-class RiskFactor(TimeStampedModel):
+class RiskFactor(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
@@ -76,3 +76,22 @@ class RiskFactor(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+
+class Symptom(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class PersonSymptomReport(TimeStampedModel):
+    person = models.ForeignKey(
+        "tracking.Person", on_delete=models.CASCADE, related_name="symptoms_reports"
+    )
+    symptom = models.ForeignKey(
+        "tracking.Symptom", on_delete=models.CASCADE, related_name="persons"
+    )
+
+    def __str__(self):
+        return f"{self.person}, {self.symptom}"
