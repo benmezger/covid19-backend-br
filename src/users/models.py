@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.authtoken.models import Token
 
 
 class UserManager(BaseUserManager):
@@ -62,3 +63,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def token(self) -> str:
+        token, _ = Token.objects.get_or_create(user=self)
+        return token.key
