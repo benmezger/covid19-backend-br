@@ -20,6 +20,7 @@ class PersonViewSet(
 ):
     serializer_class = PersonInputSerializer
     permission_classes = (IsAuthenticated,)
+    queryset = Person.objects.all() # just because Django asks for it
 
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
@@ -34,7 +35,7 @@ class PersonViewSet(
 
     def get_serializer_class(self):
         serializer_map = {
-            "symptoms": PersonSymptomnsReportInputSerializer,
+            "symptoms_report": PersonSymptomnsReportInputSerializer,
         }
         return serializer_map.get(self.action, super().get_serializer_class())
 
