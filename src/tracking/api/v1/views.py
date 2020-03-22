@@ -80,7 +80,8 @@ class PersonViewSet(
 
         return Response(status=status.HTTP_201_CREATED)
 
-class RiskFactor(
+
+class RiskFactorViewSet(
     mixins.ListModelMixin, viewsets.GenericViewSet,
 ):
     serializer_class = RiskFactorSerializer
@@ -88,6 +89,10 @@ class RiskFactor(
 
     def list(self, request, *args, **kwargs):
         risk_factors = services.risk_factors_get()
+        return Response(
+            self.get_serializer(risk_factors, many=True).data, status=status.HTTP_200_OK
+        )
+
 
 class SymptomViewset(
     mixins.ListModelMixin, viewsets.GenericViewSet,
