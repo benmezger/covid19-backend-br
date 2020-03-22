@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from tracking.models import (
     Person,
     PersonStatusChange,
+    RiskFactor,
+    Symptom,
     UNKNOWN,
     SUSPECT,
     RECOVERED,
@@ -57,3 +59,19 @@ def make_person_status_change(db):
         )
 
     yield _make_person_status_change
+
+
+@pytest.fixture
+def make_risk_factor(db):
+    def _make_risk_factor(name="Doença cardíaca"):
+        return RiskFactor.objects.create(name=name)
+
+    yield _make_risk_factor
+
+
+@pytest.fixture
+def make_symptom(db):
+    def _make_symptom(name="Diarreia"):
+        return Symptom.objects.create(name=name)
+
+    yield _make_symptom
