@@ -66,3 +66,10 @@ def person_status_change_create(
 @transaction.atomic
 def risk_factors_get() -> Iterable[RiskFactor]:
     return RiskFactor.objects.all()
+
+
+@transaction.atomic
+def symptoms_get() -> Iterable[Symptom]:
+    return Symptom.objects.all()
+
+

@@ -9,6 +9,7 @@ from tracking.api.v1.serializers import (
     PersonInputSerializer,
     PersonOutputSerializer,
     RiskFactorSerializer,
+    SymptomSerializer,
 )
 
 
@@ -67,4 +68,15 @@ class RiskFactor(
 
     def list(self, request, *args, **kwargs):
         risk_factors = services.risk_factors_get()
-        return Response(self.get_serializer(risk_factors, many=True).data)
+
+class SymptomViewset(
+    mixins.ListModelMixin, viewsets.GenericViewSet,
+):
+    serializer_class = SymptomSerializer
+    permission_classes = (AllowAny,)
+
+    def list(self, request, *args, **kwargs):
+        symptoms = services.symptoms_get()
+        return Response(
+            self.get_serializer(symptoms, many=True).data, status=status.HTTP_200_OK
+        )
