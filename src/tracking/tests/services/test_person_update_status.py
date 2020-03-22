@@ -11,7 +11,7 @@ def test_person_update_status(make_person, make_user):
     person = person_update_status(person=person, health_professional=user, status="C",)
 
     person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
-    person_status_change = person.person_status_change.last()
+    person_status_change = person.person_status_changes.last()
 
     assert person.status == "C"
 
