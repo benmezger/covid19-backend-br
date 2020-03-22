@@ -5,8 +5,15 @@ from django.urls import reverse
 from tracking.models import Person, PersonStatusChange
 
 
-def test_person_create(client, db):
-    payload = {"age": 50, "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49"}
+def test_person_create(client, db, make_risk_factor):
+    risk_factor_1 = make_risk_factor(name="Doença cardíaca")
+    risk_factor_2 = make_risk_factor(name="Diabetes")
+
+    payload = {
+        "age": 50,
+        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+        "risk_factors_ids": [risk_factor_1.id, risk_factor_2.id],
+    }
 
     response = client.post(
         reverse("person-list"), data=payload, content_type="application/json"
@@ -21,6 +28,8 @@ def test_person_create(client, db):
         "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
         "status": "D",
     }
+
+    assert person.risk_factors.count() == 2
 
 
 def test_person_update_unauthenticated(client, db, make_person):
