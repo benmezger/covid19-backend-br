@@ -32,6 +32,30 @@ def test_person_create(client, db, make_risk_factor):
     assert person.risk_factors.count() == 2
 
 
+def test_person_create_without_risk_factors(client, db):
+    payload = {
+        "age": 50,
+        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+        "risk_factors_ids": [],
+    }
+
+    response = client.post(
+        reverse("person-list"), data=payload, content_type="application/json"
+    )
+
+    person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+
+    assert response.status_code == 201
+    assert response.json() == {
+        "id": person.id,
+        "age": 50,
+        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+        "status": "D",
+    }
+
+    assert person.risk_factors.count() == 0
+
+
 def test_person_update_unauthenticated(client, db, make_person):
     person = make_person()
 
