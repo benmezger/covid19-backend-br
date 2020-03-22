@@ -41,3 +41,8 @@ def person_status_change_create(
         next=next_status,
         health_professional=health_professional,
     )
+
+
+@transaction.atomic
+def risk_factors_get() -> Iterable[RiskFactor]:
+    return RiskFactor.objects.all()
