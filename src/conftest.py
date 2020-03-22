@@ -27,6 +27,7 @@ def make_user(db):
         user = User.objects.create(
             email=email, first_name=first_name, last_name=last_name
         )
+        user.is_staff = True
         user.set_password(raw_password=password)
         user.save()
 
