@@ -34,7 +34,7 @@ def person_create(
 
 @transaction.atomic
 def person_update_status(
-    person: Person, health_professional: User, status: str
+    *, person: Person, health_professional: User, status: str
 ) -> Person:
     person_last_status = str(person.status)
 
@@ -53,7 +53,7 @@ def person_update_status(
 
 @transaction.atomic
 def person_status_change_create(
-    person: Person, health_professional: User, previous_status: str, next_status: str
+    *, person: Person, health_professional: User, previous_status: str, next_status: str
 ) -> PersonStatusChange:
     return PersonStatusChange.objects.create(
         person=person,
