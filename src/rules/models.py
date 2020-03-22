@@ -61,3 +61,7 @@ class LogicalCondition(TimeStampedModel):
 
     def __str__(self):
         return f"Logical Condition: {self.rule_condition.rule}"
+
+    @property
+    def lookup_query(self):
+        return {f"{self.attribute}__{self.operator}": self.value}

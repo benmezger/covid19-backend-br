@@ -75,3 +75,12 @@ def test_logical_condition_create_with_invalid_operator():
         )
 
     assert "Invalid attribute or operator" in excinfo.value
+
+
+@pytest.mark.django_db
+def test_logical_condition_lookup_query(logical_condition_factory):
+    logical = logical_condition_factory.create(
+        attribute="age", operator="gte", value="12"
+    )
+
+    assert logical.lookup_query == {f"age__gte": "12"}
