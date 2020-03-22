@@ -26,6 +26,11 @@ class PersonViewSet(
         "partial_update": (IsAuthenticated(),),
     }
 
+    def get_object_or_404(self, pk):
+        try:
+            return Person.objects.get(beacon_id=pk)
+        except Person.DoesNotExist:
+            raise Http404
 
     def get_serializer_class(self):
         serializer_map = {
@@ -47,7 +52,7 @@ class PersonViewSet(
         )
 
     def partial_update(self, request, pk=None, *args, **kwargs):
-        person = self.get_object(pk=pk)
+        person = self.get_object_or_404(pk=pk)
 
         serializer = self.get_serializer(person, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
