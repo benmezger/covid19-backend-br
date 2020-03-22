@@ -5,7 +5,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from tracking.models import Person
 from tracking import services
-from tracking.api.v1.serializers import PersonInputSerializer, PersonOutputSerializer
+from tracking.api.v1.serializers import (
+    PersonInputSerializer,
+    PersonOutputSerializer,
+    RiskFactorSerializer,
+)
 
 
 class PersonViewSet(
@@ -53,3 +57,14 @@ class PersonViewSet(
             return Person.objects.get(beacon_id=pk)
         except Person.DoesNotExist:
             raise Http404
+
+
+class RiskFactor(
+    mixins.ListModelMixin, viewsets.GenericViewSet,
+):
+    serializer_class = RiskFactorSerializer
+    permission_classes = (AllowAny,)
+
+    def list(self, request, *args, **kwargs):
+        risk_factors = services.risk_factors_get()
+        return Response(self.get_serializer(risk_factors, many=True).data)

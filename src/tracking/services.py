@@ -1,20 +1,40 @@
+from typing import Iterable, List, Union
+
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
-from .models import Person, PersonStatusChange
+from .models import Person, PersonStatusChange, PersonRiskFactor, RiskFactor
 
 
 User = get_user_model()
 
 
 @transaction.atomic
-def person_create(*, age: int, beacon_id: str):
-    return Person.objects.create(age=age, beacon_id=beacon_id)
+def person_risk_factor_bulk_create(
+    *, person: Person, risk_factors: Iterable[RiskFactor]
+) -> PersonRiskFactor:
+    return PersonRiskFactor.objects.bulk_create(
+        PersonRiskFactor(person=person, risk_factor=risk_factor)
+        for risk_factor in risk_factors
+    )
+
+
+@transaction.atomic
+def person_create(
+    *, age: int, beacon_id: str, risk_factors_ids: List[Union[int, None]] = None
+):
+    person = Person.objects.create(age=age, beacon_id=beacon_id)
+
+    if risk_factors_ids:
+        risk_factors = RiskFactor.objects.filter(id__in=risk_factors_ids)
+        person_risk_factor_bulk_create(person=person, risk_factors=risk_factors)
+
+    return person
 
 
 @transaction.atomic
 def person_update_status(
-    person: Person, health_professional: User, status: str
+    *, person: Person, health_professional: User, status: str
 ) -> Person:
     person_last_status = str(person.status)
 
@@ -33,7 +53,7 @@ def person_update_status(
 
 @transaction.atomic
 def person_status_change_create(
-    person: Person, health_professional: User, previous_status: str, next_status: str
+    *, person: Person, health_professional: User, previous_status: str, next_status: str
 ) -> PersonStatusChange:
     return PersonStatusChange.objects.create(
         person=person,
@@ -41,3 +61,8 @@ def person_status_change_create(
         next=next_status,
         health_professional=health_professional,
     )
+
+
+@transaction.atomic
+def risk_factors_get() -> Iterable[RiskFactor]:
+    return RiskFactor.objects.all()
