@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "versatileimagefield",
+    "django_extensions",
     "drf_yasg",
 ]
 
