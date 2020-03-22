@@ -19,6 +19,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", include("authentication.urls")),
     path("", include("tracking.urls")),
     # Enables the DRF browsable API page
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
