@@ -69,7 +69,7 @@ def test_person_update(client, db, make_person, make_user):
         "status": "C",
     }
 
-    person_status_change = person.person_status_change.last()
+    person_status_change = person.person_status_changes.last()
 
     assert person_status_change.person == person
     assert person_status_change.next == "C"
