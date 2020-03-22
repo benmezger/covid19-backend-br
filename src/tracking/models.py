@@ -68,7 +68,7 @@ class PersonRiskFactor(TimeStampedModel):
         return f"{self.person}: {self.risk_factor}"
 
 
-class RiskFactor(TimeStampedModel):
+class RiskFactor(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
