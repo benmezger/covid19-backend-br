@@ -117,7 +117,9 @@ def test_person_update_unexisting_user(client, db, make_person, make_user):
     assert response.status_code == 404
 
 
-def test_person_create_person_symptons(client, db, make_person, make_symptom, make_user):
+def test_person_create_person_symptons(
+    client, db, make_person, make_symptom, make_user
+):
     person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
     symptom_1 = make_symptom("Diarreia")
     symptom_2 = make_symptom("Dor de cabeça")

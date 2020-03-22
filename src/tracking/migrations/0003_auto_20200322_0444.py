@@ -8,38 +8,72 @@ import django_extensions.db.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracking', '0002_auto_20200322_0300'),
+        ("tracking", "0002_auto_20200322_0300"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Symptom',
+            name="Symptom",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
             ],
         ),
-        migrations.RemoveField(
-            model_name='riskfactor',
-            name='created',
-        ),
-        migrations.RemoveField(
-            model_name='riskfactor',
-            name='modified',
-        ),
+        migrations.RemoveField(model_name="riskfactor", name="created",),
+        migrations.RemoveField(model_name="riskfactor", name="modified",),
         migrations.CreateModel(
-            name='PersonSymptomReport',
+            name="PersonSymptomReport",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='symptoms_reports', to='tracking.Person')),
-                ('symptom', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='persons', to='tracking.Symptom')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name="created"
+                    ),
+                ),
+                (
+                    "modified",
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name="modified"
+                    ),
+                ),
+                (
+                    "person",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="symptoms_reports",
+                        to="tracking.Person",
+                    ),
+                ),
+                (
+                    "symptom",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="persons",
+                        to="tracking.Symptom",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-modified', '-created'),
-                'get_latest_by': 'modified',
-                'abstract': False,
+                "ordering": ("-modified", "-created"),
+                "get_latest_by": "modified",
+                "abstract": False,
             },
         ),
     ]
