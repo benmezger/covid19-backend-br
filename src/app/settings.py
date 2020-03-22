@@ -41,10 +41,11 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "versatileimagefield",
+    "django_extensions",
     "drf_yasg",
 ]
 
-PROJECT_APPS = ["users"]
+PROJECT_APPS = ["tracking", "users"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
