@@ -1,5 +1,6 @@
 from django.http import Http404
 from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -8,6 +9,7 @@ from tracking import services
 from tracking.api.v1.serializers import (
     PersonInputSerializer,
     PersonOutputSerializer,
+    PersonSymptomnsReportInputSerializer,
     RiskFactorSerializer,
     SymptomSerializer,
 )
@@ -23,6 +25,13 @@ class PersonViewSet(
         "create": (AllowAny(),),
         "partial_update": (IsAuthenticated(),),
     }
+
+
+    def get_serializer_class(self):
+        serializer_map = {
+            "symptoms": PersonSymptomnsReportInputSerializer,
+        }
+        return serializer_map.get(self.action, super().get_serializer_class())
 
     def get_permissions(self):
         return self._PERMISSION_CLASSES.get(self.action, super().get_permissions())
@@ -53,12 +62,18 @@ class PersonViewSet(
             PersonOutputSerializer(instance=person).data, status=status.HTTP_200_OK
         )
 
-    def get_object(self, pk):
-        try:
-            return Person.objects.get(beacon_id=pk)
-        except Person.DoesNotExist:
-            raise Http404
+    @action(("POST",), detail=True)
+    def symptoms_report(self, request, pk):
+        person = self.get_object_or_404(pk=pk)
 
+        serializer = PersonSymptomnsReportInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        services.person_symptom_report_bulk_create(
+            person=person, symptoms_ids=serializer.validated_data["symptoms_ids"]
+        )
+
+        return Response(status=status.HTTP_201_CREATED)
 
 class RiskFactor(
     mixins.ListModelMixin, viewsets.GenericViewSet,

@@ -3,7 +3,14 @@ from typing import Iterable, List, Union
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
-from .models import Person, PersonStatusChange, PersonRiskFactor, RiskFactor
+from .models import (
+    Person,
+    PersonStatusChange,
+    PersonSymptomReport,
+    PersonRiskFactor,
+    RiskFactor,
+    Symptom,
+)
 
 
 User = get_user_model()
@@ -73,3 +80,12 @@ def symptoms_get() -> Iterable[Symptom]:
     return Symptom.objects.all()
 
 
+@transaction.atomic
+def person_symptom_report_bulk_create(
+    *, person: Person, symptoms_ids: List[int]
+) -> Iterable[PersonSymptomReport]:
+    symptoms = Symptom.objects.filter(id__in=symptoms_ids)
+
+    return PersonSymptomReport.objects.bulk_create(
+        PersonSymptomReport(person=person, symptom=symptom) for symptom in symptoms
+    )

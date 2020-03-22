@@ -83,3 +83,15 @@ class Symptom(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PersonSymptomReport(TimeStampedModel):
+    person = models.ForeignKey(
+        "tracking.Person", on_delete=models.CASCADE, related_name="symptoms_reports"
+    )
+    symptom = models.ForeignKey(
+        "tracking.Symptom", on_delete=models.CASCADE, related_name="persons"
+    )
+
+    def __str__(self):
+        return f"{self.person}, {self.symptom}"

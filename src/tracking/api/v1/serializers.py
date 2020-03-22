@@ -28,3 +28,5 @@ class SymptomSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
+class PersonSymptomnsReportInputSerializer(serializers.Serializer):
+    symptoms_ids = serializers.ListField(child=serializers.IntegerField())
