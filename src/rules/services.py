@@ -35,3 +35,10 @@ def logical_condition_create(
         rule_condition=rule_condition,
     )
     return logical
+
+
+def get_rule_condition_lookups(rule_condition: RuleCondition) -> dict:
+    lookups = {}
+    for cond in rule_condition.logical_conditions.all():
+        lookups.update(cond.lookup_query)
+    return lookups

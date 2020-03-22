@@ -84,3 +84,16 @@ def test_logical_condition_lookup_query(logical_condition_factory):
     )
 
     assert logical.lookup_query == {f"age__gte": "12"}
+
+
+@pytest.mark.django_db
+def test_get_rule_condition_lookups(rule_factory, logical_condition_factory):
+    rule = rule_factory.create()
+    logical_condition_factory.create_batch(5, rule_condition=rule.conditions.first())
+    lookups = services.get_rule_condition_lookups(rule.conditions.first())
+    required_lookups = {}
+
+    for cond in rule.conditions.first().logical_conditions.all():
+        required_lookups.update(cond.lookup_query)
+
+    assert required_lookups == lookups

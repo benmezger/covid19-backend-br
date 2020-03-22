@@ -30,7 +30,7 @@ class LogicalConditionFactory(factory.DjangoModelFactory):
         model = LogicalCondition
 
     attribute = FuzzyChoice((i[0] for i in ConditionAttribute.choices()))
-    operator = FuzzyChoice((i[1] for i in ConditionOperator.choices()))
+    operator = FuzzyChoice((i[0] for i in ConditionOperator.choices()))
     value = FuzzyChoice((10, 20, 30, 40, 50, 60))
 
     rule_condition = factory.SubFactory("rules.tests.factories.RuleConditionFactory",)
