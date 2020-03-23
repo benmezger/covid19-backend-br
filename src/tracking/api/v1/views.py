@@ -16,10 +16,7 @@ from tracking.api.v1.serializers import (
 )
 
 
-
-class EncounterViewSet(
-    mixins.CreateModelMixin, viewsets.GenericViewSet
-):
+class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterInputSerializer
     permission_classes = (AllowAny,)
