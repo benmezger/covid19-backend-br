@@ -4,15 +4,30 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from tracking.models import Person, RiskFactor, Symptom
+from tracking.models import Encounter, Person, RiskFactor, Symptom
 from tracking import services
 from tracking.api.v1.serializers import (
+    EncounterInputSerializer,
     PersonInputSerializer,
     PersonOutputSerializer,
     PersonSymptomnsReportInputSerializer,
     RiskFactorSerializer,
     SymptomSerializer,
 )
+
+
+class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Encounter.objects.all()
+    serializer_class = EncounterInputSerializer
+    permission_classes = (AllowAny,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        services.encounter_create(**serializer.validated_data)
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class PersonViewSet(

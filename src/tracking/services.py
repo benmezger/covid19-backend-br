@@ -1,9 +1,11 @@
+from datetime import datetime
 from typing import Iterable, List, Union
 
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
 from .models import (
+    Encounter,
     Person,
     PersonStatusChange,
     PersonSymptomReport,
@@ -78,4 +80,28 @@ def person_symptom_report_bulk_create(
 
     return PersonSymptomReport.objects.bulk_create(
         PersonSymptomReport(person=person, symptom=symptom) for symptom in symptoms
+    )
+
+
+@transaction.atomic
+def encounter_create(
+    *,
+    person_one_beacon_id: str,
+    person_two_beacon_id: str,
+    start_date: float,
+    end_date: float,
+    min_distance: float,
+    duration: int
+) -> Union[Encounter, None]:
+
+    person_one = Person.objects.get(beacon_id=person_one_beacon_id)
+    person_two = Person.objects.get(beacon_id=person_two_beacon_id)
+
+    return Encounter.objects.create(
+        person_one=person_one,
+        person_two=person_two,
+        start_date=datetime.fromtimestamp(start_date),
+        end_date=datetime.fromtimestamp(end_date),
+        min_distance=min_distance,
+        duration=duration,
     )
