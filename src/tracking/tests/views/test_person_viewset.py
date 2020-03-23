@@ -32,6 +32,30 @@ def test_person_create(client, db, make_risk_factor):
     assert person.risk_factors.count() == 2
 
 
+def test_person_create_existing_beacon_id(client, db, make_person, make_risk_factor):
+    person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+
+    risk_factor_1 = make_risk_factor(name="Doença cardíaca")
+    risk_factor_2 = make_risk_factor(name="Diabetes")
+
+    payload = {
+        "age": 50,
+        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+        "risk_factors_ids": [risk_factor_1.id, risk_factor_2.id],
+    }
+
+    response = client.post(
+        reverse("person-list"), data=payload, content_type="application/json"
+    )
+
+    person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+
+    assert response.status_code == 400
+    assert response.json() == {"beacon_id": ["This field must be unique."]}
+
+    assert person.risk_factors.count() == 0
+
+
 def test_person_create_without_risk_factors(client, db):
     payload = {
         "age": 50,
