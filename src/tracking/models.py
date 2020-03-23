@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django_extensions.db.models import TimeStampedModel
 
+from .managers import EncounterManager
+
 
 UNKNOWN = "D"
 SUSPECT = "S"
@@ -95,3 +97,29 @@ class PersonSymptomReport(TimeStampedModel):
 
     def __str__(self):
         return f"{self.person}, {self.symptom}"
+
+
+class Encounter(models.Model):
+    person_one = models.ForeignKey(
+        "tracking.Person",
+        on_delete=models.SET_NULL,
+        related_name="encounters_as_first_person",
+        null=True,
+        blank=True,
+    )
+    person_two = models.ForeignKey(
+        "tracking.Person",
+        on_delete=models.SET_NULL,
+        related_name="encounters_as_second_person",
+        null=True,
+        blank=True,
+    )
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    duration = models.PositiveIntegerField()
+    min_distance = models.FloatField()
+
+    objects = EncounterManager()
+
+    def __str__(self):
+        return f"{self.person_one} - {self.person_two}"
