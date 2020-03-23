@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 
 from tracking.models import (
+    Encounter,
     Person,
     PersonStatusChange,
     RiskFactor,
@@ -75,3 +76,25 @@ def make_symptom(db):
         return Symptom.objects.create(name=name)
 
     yield _make_symptom
+
+
+@pytest.fixture
+def make_encounter(db):
+    def _make_encounter(
+        person_one=person_one,
+        person_two=person_two,
+        start_date=start_date,
+        end_date=end_date,
+        min_distance=min_distance,
+        duration=duration,
+    ):
+        return Encounter.objects.create(
+            person_one=person_one,
+            person_two=person_two,
+            start_date=start_date,
+            end_date=end_date,
+            min_distance=min_distance,
+            duration=duration,
+        )
+
+    yield _make_encounter
