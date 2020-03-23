@@ -40,6 +40,7 @@ class PersonViewSet(
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
         "partial_update": (IsAuthenticated(),),
+        "symptoms_report": (AllowAny(),),
     }
 
     def get_object_or_404(self, pk):
