@@ -13,39 +13,45 @@
             var $value = $rootElement.find('input[id*="value"]');
 
             clearOptionsFromOperator($operator);
-            $value.val('');
+            if (!$value.attr('default')) {
+                var defaultInputValue = $value.val();
+                $value.attr('default', defaultInputValue);
+                $value.val('');
+            }
             $value.show();
             $value.parent().find('a, br').remove();
             
             if ($element.val() == 'symptoms') {
                 var attributeOperators = ['IN', 'NOT IN'];
-                fillOperatorOptions($operator, attributeOperators);
-
-                var possibleValues = [
-                    {id: 1, value: 'Symptom 1'},
-                    {id: 2, value: 'Symptom 2'},
-                    {id: 3, value: 'Symptom 3'},
-                ];
-                fillPossibleValues($value, possibleValues);
+                fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+                
+                $.ajax("/api/v1/symptom/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
+                
+                // Sample version with context
+                // Comment line above with the AJAX call and add this one:
+                // fillPossibleValues($value, payload, {% VAR FROM CONTEXT WITH ARRAY OF OBJECTS: [{id:1, text:'Sample'}, {id:2, text:'Sample 2'}] %});
             }
             else if ($element.val() == 'age') {
                 var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
-                fillOperatorOptions($operator, attributeOperators);
+                fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+                $value.val($value.attr('default'));
             }
         }
 
-        var fillOperatorOptions = ($operator, attributeOperators) => {
+        var fillOperatorOptions = ($operator, attributeOperators, defaultValue) => {
             var filtered_operators = operators.filter(operator => attributeOperators.includes(operator.value));
             filtered_operators.forEach(e => $operator.append($('<option>', { value: e.value, text: e.text })));
+            $operator.val(defaultValue);
         }
 
-        var fillPossibleValues = ($value, possibleValues) => {
+        var fillPossibleValues = ($value, possibleValues, defaultValues) => {
             possibleValues.forEach(element => {
                 $value.parent().prepend($('<br>'));
-                $value.parent().prepend($('<a>', { href: 'javascript:;', text: element.value, id: element.id }));
+                $value.parent().prepend($('<a>', { href: 'javascript:;', text: element.name, id: element.id }));
             });
             $value.parent().find('a').on('click', handleValueClick);
             $value.parent().find('input').hide();
+            defaultValues.split(', ').map(id => $value.parent().find(`a[id="${id}"]`).click());
         }
 
         var handleValueClick = event => {
@@ -57,10 +63,17 @@
             const index = values.indexOf(id);
             if (index > -1) {
                 values.splice(index, 1);
-                $target.css('fontWeight', 'normal');
+                $target.css({
+                    fontWeight: 'normal',
+                    color: '#447e9b',
+                });
+                
             }
             else {
-                $target.css('fontWeight', 'bold');
+                $target.css({
+                    fontWeight: 'bold',
+                    color: 'red',
+                });
                 values.push(id);
             }
 
@@ -68,7 +81,11 @@
         }
 
         var clearOptionsFromOperator = $element => {
-            $element.find('option').map(function() { if ($(this).val() != "") { $(this).remove() } })
+            if (!$element.attr('default')) {
+                var defaultValue = $element.val();
+                $element.attr('default', defaultValue);
+                $element.find('option').map(function() { if ($(this).val() != "") { $(this).remove() } })
+            }
         }
 
 		$(document).ready(function() {
@@ -80,9 +97,18 @@
             // Clean all operators
             document.querySelectorAll('select[id*="operator"]').forEach(element => clearOptionsFromOperator($(element)));
             
-            $('select[id*="attribute"]').change(function(e) {
+            $('select[id*="attribute"]')
+            .change(function(e) {
                 handleAttributeChange($(this));
+            })
+            .each(function(index, element) {
+                if ($(element).val() != '') {
+                    handleAttributeChange($(element));
+                }
             });
+
+            // Load values on start
+            $('[logical_conditions-0-attribute]')
 		});
 	</script>
 {% endblock %}
