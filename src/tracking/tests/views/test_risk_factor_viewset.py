@@ -7,7 +7,9 @@ def test_risk_factor_list(client, db, make_risk_factor):
     risk_factor_1 = make_risk_factor(name="Doença cardíaca")
     risk_factor_2 = make_risk_factor(name="Diabetes")
 
-    response = client.get(reverse("risk-factor-list"), content_type="application/json")
+    response = client.get(
+        reverse("tracking:risk-factor-list"), content_type="application/json"
+    )
 
     assert response.status_code == 200
     assert response.json() == [
