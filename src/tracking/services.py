@@ -86,3 +86,7 @@ def person_symptom_report_bulk_create(
 
 def symptom_list() -> List[Dict[int, str]]:
     return list(Symptom.objects.values())
+
+
+def risk_factors_list() -> List[Dict[int, str]]:
+    return list(RiskFactor.objects.values())

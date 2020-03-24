@@ -38,6 +38,7 @@ class ConditionOperator(BaseEnum):
 class ConditionAttribute(BaseEnum):
     AGE = "Age"
     SYMPTOMS = "Symptoms"
+    RISK_FACTORS = "Risk Factors"
 
     @classmethod
     def choices(cls):

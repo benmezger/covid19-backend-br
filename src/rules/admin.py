@@ -4,8 +4,8 @@ from django import forms
 from django.contrib import admin
 
 from rules.models import LogicalCondition, Rule, RuleCondition
-from tracking.models import Symptom
-from tracking.services import symptom_list
+from tracking.models import Symptom, RiskFactor
+from tracking.services import symptom_list, risk_factors_list
 
 
 class CustomRuleConditionChangeViewMixin:
@@ -17,7 +17,13 @@ class CustomRuleConditionChangeViewMixin:
             symptom["text"] = symptom.pop("name")
             symptoms.append(symptom)
 
+        risk_factors = []
+        for risk_factor in risk_factors_list():
+            risk_factor["text"] = risk_factor.pop("name")
+            risk_factors.append(risk_factor)
+
         extra_context["symptoms"] = json.dumps(symptoms)
+        extra_context["risk_factors"] = json.dumps(risk_factors)
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context,
         )
@@ -55,6 +61,8 @@ class RuleConditionCustomForm(forms.ModelForm):
 
         if attr == "symptoms" and data.get("value", None):
             data["symptom_ids"] = list(map(int, data["value"].split(",")))
+        elif attr == "risk_factors" and data.get("value", None):
+            data["risk_factors_ids"] = list(map(int, data["value"].split(",")))
 
         self.cleaned_data = data
         return super().clean()
@@ -67,6 +75,13 @@ class RuleConditionCustomForm(forms.ModelForm):
             self.cleaned_data.pop("value")
             super().save(commit)
             self.instance.symptoms.add(*symptoms)
+        elif self.cleaned_data.get("risk_factors_ids", None):
+            risk_factors = RiskFactor.objects.filter(
+                id__in=self.cleaned_data.pop("risk_factors_ids")
+            )
+            self.cleaned_data.pop("value")
+            super().save(commit)
+            self.instance.risk_factors.add(*risk_factors)
         else:
             super().save(commit)
         return self.instance
