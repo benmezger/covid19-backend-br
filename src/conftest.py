@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from django.contrib.auth import get_user_model
 
@@ -13,6 +15,8 @@ from tracking.models import (
     CONFIRMED,
     NEGATIVATED,
 )
+
+from notification.models import Notification, Rule
 
 User = get_user_model()
 
@@ -99,3 +103,25 @@ def make_encounter(db):
         )
 
     yield _make_encounter
+
+
+@pytest.fixture
+def make_notification(db, make_person, make_rule):
+    def _make_notification(person=None, rule=None, read=False):
+        if not person:
+            person = make_person()
+
+        if not rule:
+            rule = make_rule()
+
+        return Notification.objects.create(person=person, rule=rule, read=read,)
+
+    yield _make_notification
+
+
+@pytest.fixture
+def make_rule(db):
+    def _make_rule(title="Título", message="Mensagem"):
+        return Rule.objects.create(title=title, message=message)
+
+    yield _make_rule
