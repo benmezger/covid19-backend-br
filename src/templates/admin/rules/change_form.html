@@ -24,7 +24,12 @@
             if ($element.val() == 'symptoms') {
                 var attributeOperators = ['IN', 'NOT IN'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+                
                 $.ajax("/api/v1/symptom/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
+                
+                // Sample version with context
+                // Comment line above with the AJAX call and add this one:
+                // fillPossibleValues($value, payload, {% VAR FROM CONTEXT WITH ARRAY OF OBJECTS: [{id:1, text:'Sample'}, {id:2, text:'Sample 2'}] %});
             }
             else if ($element.val() == 'age') {
                 var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
@@ -58,10 +63,17 @@
             const index = values.indexOf(id);
             if (index > -1) {
                 values.splice(index, 1);
-                $target.css('fontWeight', 'normal');
+                $target.css({
+                    fontWeight: 'normal',
+                    color: '#447e9b',
+                });
+                
             }
             else {
-                $target.css('fontWeight', 'bold');
+                $target.css({
+                    fontWeight: 'bold',
+                    color: 'red',
+                });
                 values.push(id);
             }
 
