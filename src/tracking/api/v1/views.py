@@ -23,6 +23,7 @@ class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = EncounterInputSerializer
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(operation_summary="encounter_batch_create. Accepts a list.")
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
