@@ -36,7 +36,7 @@ class ConditionOperator(BaseEnum):
 
 
 class ConditionAttribute(BaseEnum):
-    AGE = "Idade"
+    AGE = "Age"
     SYMPTOMS = "Symptoms"
 
     @classmethod

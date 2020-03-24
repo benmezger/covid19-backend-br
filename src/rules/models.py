@@ -6,11 +6,11 @@ from rules.datatypes import ConditionAttribute, ConditionOperator
 
 class Rule(TimeStampedModel):
     name = models.CharField(
-        max_length=255, null=False, blank=False, verbose_name="Nome"
+        max_length=255, null=False, blank=False, verbose_name="Name"
     )
 
     message = models.CharField(
-        max_length=255, null=False, blank=False, verbose_name="Mensagem"
+        max_length=255, null=False, blank=False, verbose_name="Message"
     )
     enabled = models.BooleanField(null=False, default=True, blank=False)
 
@@ -22,7 +22,8 @@ class RuleCondition(TimeStampedModel):
     rule = models.ForeignKey(
         "rules.Rule",
         null=True,
-        verbose_name="Regra",
+        blank=True,
+        verbose_name="Rule",
         on_delete=models.SET_NULL,
         related_name="conditions",
     )
@@ -34,7 +35,7 @@ class RuleCondition(TimeStampedModel):
 class LogicalCondition(TimeStampedModel):
     rule_condition = models.ForeignKey(
         "rules.RuleCondition",
-        verbose_name="Condicao",
+        verbose_name="Condition",
         on_delete=models.CASCADE,
         related_name="logical_conditions",
     )
@@ -44,7 +45,7 @@ class LogicalCondition(TimeStampedModel):
         choices=ConditionAttribute.choices(),
         null=False,
         blank=False,
-        verbose_name="Atributo",
+        verbose_name="Attribute",
     )
 
     operator = models.CharField(
@@ -52,11 +53,11 @@ class LogicalCondition(TimeStampedModel):
         choices=ConditionOperator.choices(),
         null=False,
         blank=False,
-        verbose_name="Operador",
+        verbose_name="Operator",
     )
 
     value = models.CharField(
-        max_length=100, null=False, blank=False, verbose_name="Valor",
+        max_length=100, null=False, blank=False, verbose_name="Value",
     )
 
     def __str__(self):
