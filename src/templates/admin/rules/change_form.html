@@ -29,7 +29,7 @@
 
                 // Sample version with context
                 // Comment line above with the AJAX call and add this one:
-                fillPossibleValues($value, payload, "{{ symptoms }}");
+                // fillPossibleValues($value, {{ symptoms|safe }}, $value.attr('default'));
             }
 
             else if ($element.val() == 'risk_factors') {
@@ -40,7 +40,7 @@
 
                 // Sample version with context
                 // Comment line above with the AJAX call and add this one:
-                fillPossibleValues($value, payload, "{{ risk_factors }}");
+                // fillPossibleValues($value, {{ risk_factors|safe }}, $value.attr('default'));
             }
             else if ($element.val() == 'age') {
                 var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
@@ -95,8 +95,8 @@
             if (!$element.attr('default')) {
                 var defaultValue = $element.val();
                 $element.attr('default', defaultValue);
-                $element.find('option').map(function() { if ($(this).val() != "") { $(this).remove() } })
             }
+            $element.find('option').map(function() { if ($(this).val() != "") { $(this).remove() } })
         }
 
 		$(document).ready(function() {
