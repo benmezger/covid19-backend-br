@@ -29,7 +29,7 @@
                 
                 // Sample version with context
                 // Comment line above with the AJAX call and add this one:
-                // fillPossibleValues($value, payload, {% VAR FROM CONTEXT WITH ARRAY OF OBJECTS: [{id:1, text:'Sample'}, {id:2, text:'Sample 2'}] %});
+                fillPossibleValues($value, payload, "{{ symptoms }}");
             }
             else if ($element.val() == 'age') {
                 var attributeOperators = ['gt', 'gte', 'lt', 'lte'];

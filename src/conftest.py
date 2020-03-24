@@ -1,18 +1,12 @@
 import pytest
 from django.contrib.auth import get_user_model
+from faker import Faker
 
-from tracking.models import (
-    Person,
-    PersonStatusChange,
-    RiskFactor,
-    Symptom,
-    UNKNOWN,
-    SUSPECT,
-    RECOVERED,
-    CONFIRMED,
-    NEGATIVATED,
-)
+from tracking.models import (CONFIRMED, NEGATIVATED, RECOVERED, SUSPECT,
+                             UNKNOWN, Person, PersonStatusChange, RiskFactor,
+                             Symptom)
 
+fake = Faker()
 User = get_user_model()
 
 
@@ -75,3 +69,14 @@ def make_symptom(db):
         return Symptom.objects.create(name=name)
 
     yield _make_symptom
+
+
+@pytest.fixture
+def list_of_symptoms(db):
+    def _list_of_symptoms(size=10):
+        symptoms = []
+        for i in range(size):
+            symptoms.append(Symptom.objects.create(name=fake.name()))
+        return symptoms
+
+    yield _list_of_symptoms

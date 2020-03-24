@@ -1,17 +1,10 @@
-from typing import Iterable, List, Union
+from typing import Dict, Iterable, List, Union
 
-from django.db import transaction
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
-from .models import (
-    Person,
-    PersonStatusChange,
-    PersonSymptomReport,
-    PersonRiskFactor,
-    RiskFactor,
-    Symptom,
-)
-
+from .models import (Person, PersonRiskFactor, PersonStatusChange,
+                     PersonSymptomReport, RiskFactor, Symptom)
 
 User = get_user_model()
 
@@ -89,3 +82,7 @@ def person_symptom_report_bulk_create(
     return PersonSymptomReport.objects.bulk_create(
         PersonSymptomReport(person=person, symptom=symptom) for symptom in symptoms
     )
+
+
+def symptom_list() -> List[Dict[int, str]]:
+    return list(Symptom.objects.values())

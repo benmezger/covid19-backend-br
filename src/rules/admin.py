@@ -1,7 +1,26 @@
+import json
+
 from django import forms
 from django.contrib import admin
 
 from rules.models import LogicalCondition, Rule, RuleCondition
+from tracking.models import Symptom
+from tracking.services import symptom_list
+
+
+class CustomRuleConditionChangeViewMixin:
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        symptoms = []
+
+        for symptom in symptom_list():
+            symptom["text"] = symptom.pop("name")
+            symptoms.append(symptom)
+
+        extra_context["symptoms"] = json.dumps(symptoms)
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context,
+        )
 
 
 class RuleCustomForm(forms.ModelForm):
@@ -25,8 +44,37 @@ class RuleCustomForm(forms.ModelForm):
         return instance
 
 
+class RuleConditionCustomForm(forms.ModelForm):
+    class Meta:
+        model = RuleCondition
+        fields = "__all__"
+
+    def clean(self):
+        data = self.cleaned_data
+        attr = data.get("attribute", None)
+
+        if attr == "symptoms" and data.get("value", None):
+            data["symptom_ids"] = list(map(int, data["value"].split(",")))
+
+        self.cleaned_data = data
+        return super().clean()
+
+    def save(self, commit):
+        if self.cleaned_data.get("symptom_ids", None):
+            symptoms = Symptom.objects.filter(
+                id__in=self.cleaned_data.pop("symptom_ids")
+            )
+            self.cleaned_data.pop("value")
+            super().save(commit)
+            self.instance.symptoms.add(*symptoms)
+        else:
+            super().save(commit)
+        return self.instance
+
+
 class LogicalConditionInlineAdmin(admin.TabularInline):
     model = LogicalCondition
+    form = RuleConditionCustomForm
 
 
 @admin.register(Rule)
@@ -38,7 +86,7 @@ class RuleAdmin(admin.ModelAdmin):
 
 
 @admin.register(RuleCondition)
-class RuleConditionAdmin(admin.ModelAdmin):
+class RuleConditionAdmin(CustomRuleConditionChangeViewMixin, admin.ModelAdmin):
     list_display = ("get_name",)
     list_filter = ("rule__name",)
     search_fields = ("rule__name",)
