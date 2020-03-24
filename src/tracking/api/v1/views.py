@@ -1,11 +1,12 @@
 from django.http import Http404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from tracking.models import Encounter, Person, RiskFactor, Symptom
 from tracking import services
+from notification.api.v1.serializers import NotificationOutputSerializer
 from tracking.api.v1.serializers import (
     EncounterInputSerializer,
     PersonInputSerializer,
@@ -14,6 +15,7 @@ from tracking.api.v1.serializers import (
     RiskFactorSerializer,
     SymptomSerializer,
 )
+from tracking.models import Encounter, Person, RiskFactor, Symptom
 
 
 class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -41,6 +43,7 @@ class PersonViewSet(
         "create": (AllowAny(),),
         "partial_update": (IsAuthenticated(),),
         "symptoms_report": (AllowAny(),),
+        "notification": (AllowAny(),),
     }
 
     def get_object_or_404(self, pk):
@@ -96,6 +99,14 @@ class PersonViewSet(
         )
 
         return Response(status=status.HTTP_201_CREATED)
+
+    @swagger_auto_schema(responses={200: NotificationOutputSerializer})
+    @action(("GET",), detail=True)
+    def notification(self, request, pk):
+        person = self.get_object_or_404(pk=pk)
+        notifications = person.notifications.all()
+
+        return Response(NotificationOutputSerializer(notifications, many=True).data)
 
 
 # Generic view. No need to overwrite anything

@@ -160,3 +160,17 @@ def test_person_create_person_symptons(
 
     assert response.status_code == 201
     assert PersonSymptomReport.objects.count() == 2
+
+
+def test_person_get_notifications(client, db, make_person, make_notification):
+    person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+    notification_one = make_notification(person=person)
+    notification_two = make_notification(person=person)
+
+    response = client.get(
+        reverse("tracking:person-notification", kwargs={"pk": person.beacon_id}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == 200
+    assert len(response.json()) == 2
