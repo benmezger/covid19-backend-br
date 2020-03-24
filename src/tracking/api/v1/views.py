@@ -24,10 +24,10 @@ class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
 
-        services.encounter_create(**serializer.validated_data)
+        services.encounter_bulk_create(encounters_data=serializer.validated_data)
 
         return Response(status=status.HTTP_201_CREATED)
 
