@@ -15,14 +15,16 @@ def test_encounter_create(make_person, make_user):
         start_date = datetime.now().timestamp()
         end_date = (datetime.now() + timedelta(hours=10)).timestamp()
 
-        encounters_data.append(OrderedDict(
-            person_one_beacon_id=person_one.beacon_id,
-            person_two_beacon_id=person_two.beacon_id,
-            start_date=start_date,
-            end_date=end_date,
-            duration=10,
-            min_distance=10.0
-        ))
+        encounters_data.append(
+            OrderedDict(
+                person_one_beacon_id=person_one.beacon_id,
+                person_two_beacon_id=person_two.beacon_id,
+                start_date=start_date,
+                end_date=end_date,
+                duration=10,
+                min_distance=10.0,
+            )
+        )
 
     encounter_bulk_create(encounters_data)
 
