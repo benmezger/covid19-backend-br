@@ -2,7 +2,7 @@
 
 {% block extrahead %}
     {{ block.super }}
-    
+
     <script type="text/javascript">
         $ = django.jQuery;
         var operators;
@@ -20,13 +20,13 @@
             }
             $value.show();
             $value.parent().find('a, br').remove();
-            
+
             if ($element.val() == 'symptoms') {
                 var attributeOperators = ['IN', 'NOT IN'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
-                
+
                 $.ajax("/api/v1/symptom/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
-                
+
                 // Sample version with context
                 // Comment line above with the AJAX call and add this one:
                 fillPossibleValues($value, payload, "{{ symptoms }}");
@@ -59,7 +59,7 @@
             var id = $target.attr('id');
             var textField = $(event.target).parent().find('input[id*="value"]');
             var values = textField.val().split(', ').filter(item => item);
-            
+
             const index = values.indexOf(id);
             if (index > -1) {
                 values.splice(index, 1);
@@ -67,7 +67,7 @@
                     fontWeight: 'normal',
                     color: '#447e9b',
                 });
-                
+
             }
             else {
                 $target.css({
@@ -96,7 +96,7 @@
 
             // Clean all operators
             document.querySelectorAll('select[id*="operator"]').forEach(element => clearOptionsFromOperator($(element)));
-            
+
             $('select[id*="attribute"]')
             .change(function(e) {
                 handleAttributeChange($(this));
