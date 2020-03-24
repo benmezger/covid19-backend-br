@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from tracking.models import (
+    Encounter,
     Person,
     PersonRiskFactor,
     PersonStatusChange,
@@ -41,3 +42,17 @@ class SymptomAdmin(admin.ModelAdmin):
         "id",
         "name",
     )
+
+
+@admin.register(Encounter)
+class EncounterAdmin(admin.ModelAdmin):
+    list_display = (
+        "person_one",
+        "person_two",
+        "start_date",
+        "end_date",
+        "duration",
+        "min_distance",
+    )
+
+    search_fields = ("person_one", "person_two")

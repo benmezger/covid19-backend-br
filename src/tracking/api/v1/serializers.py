@@ -4,6 +4,15 @@ from rest_framework.validators import UniqueValidator
 from tracking.models import Person, RiskFactor, Symptom
 
 
+class EncounterInputSerializer(serializers.Serializer):
+    person_one_beacon_id = serializers.CharField()
+    person_two_beacon_id = serializers.CharField()
+    start_date = serializers.FloatField()
+    end_date = serializers.FloatField()
+    min_distance = serializers.FloatField()
+    duration = serializers.IntegerField()
+
+
 class PersonInputSerializer(serializers.Serializer):
     age = serializers.IntegerField()
     beacon_id = serializers.CharField(
