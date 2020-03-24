@@ -19,7 +19,9 @@ def test_encounter_create(client, db, make_person):
     }
 
     response = client.post(
-        reverse("encounter-list"), data=payload, content_type="application/json"
+        reverse("tracking:encounter-list"),
+        data=payload,
+        content_type="application/json",
     )
 
     assert Encounter.objects.count() == 1
