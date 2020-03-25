@@ -14,7 +14,7 @@ class LogicalConditionSerializer(serializers.ModelSerializer):
 
 
 class RuleConditionSerializer(serializers.ModelSerializer):
-    logical_conditions = LogicalConditionSerializer(many=True)
+    logical_conditions = LogicalConditionSerializer(many=True, read_only=True)
 
     class Meta:
         model = RuleCondition

@@ -8,14 +8,14 @@ from rules.models import Rule
 
 class RuleViewSet(APIView):
     class OutputSerializer(serializers.ModelSerializer):
-        rule_conditions = RuleConditionSerializer()
+        conditions = RuleConditionSerializer(many=True)
 
         class Meta:
             model = Rule
             fields = (
                 "id",
                 "name",
-                "rules",
+                "conditions",
             )
 
     def get_queryset(self):
