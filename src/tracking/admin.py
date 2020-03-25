@@ -19,6 +19,7 @@ class PersonRiskFactorAdmin(admin.ModelAdmin):
 class RiskFactorAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
     search_fields = ("name",)
+    exclude = ("rule",)
 
 
 class PersonStatusChangeInline(admin.TabularInline):
@@ -41,3 +42,4 @@ class SymptomAdmin(admin.ModelAdmin):
         "id",
         "name",
     )
+    exclude = ("rule",)
