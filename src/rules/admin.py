@@ -91,6 +91,7 @@ class RuleConditionCustomForm(forms.ModelForm):
 class LogicalConditionInlineAdmin(admin.TabularInline):
     model = LogicalCondition
     form = RuleConditionCustomForm
+    extra = 0
 
 
 @admin.register(Rule)

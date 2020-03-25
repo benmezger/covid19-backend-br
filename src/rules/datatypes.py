@@ -24,7 +24,6 @@ class ConditionOperator(BaseEnum):
     LESS_THAN = ("<", "lt")
     LESS_THAN_OR_EQUAL_TO = ("=<", "lte")
     IN = ("in", "IN")
-    NOT_IN = ("not in", "NOT IN")
 
     @classmethod
     def choices(cls):
@@ -39,6 +38,8 @@ class ConditionAttribute(BaseEnum):
     AGE = "Age"
     SYMPTOMS = "Symptoms"
     RISK_FACTORS = "Risk Factors"
+    ENCOUNTER_DISTANCE = "Encounter Distance"
+    ENCOUNTER_DURATION = "Encounter Duration"
 
     @classmethod
     def choices(cls):
