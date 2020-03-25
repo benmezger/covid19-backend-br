@@ -5,11 +5,6 @@ from django.contrib.auth import get_user_model
 from faker import Faker
 
 from tracking.models import (
-    UNKNOWN,
-    SUSPECT,
-    RECOVERED,
-    CONFIRMED,
-    NEGATIVATED,
     Encounter,
     Person,
     PersonStatusChange,
@@ -62,8 +57,8 @@ def make_person_status_change(db):
 
         return PersonStatusChange.objects.create(
             person=person,
-            previous=UNKNOWN,
-            next=RECOVERED,
+            previous=Person.UNKNOWN,
+            next=Person.RECOVERED,
             health_professional=health_professional,
         )
 

@@ -54,6 +54,7 @@ def person_update_status(
         next_status=status,
     )
 
+    # caching purposes
     person.status = status
     person.save()
 

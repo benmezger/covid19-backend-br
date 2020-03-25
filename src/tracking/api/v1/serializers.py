@@ -42,3 +42,13 @@ class SymptomSerializer(serializers.ModelSerializer):
 
 class PersonSymptomnsReportInputSerializer(serializers.Serializer):
     symptoms_ids = serializers.ListField(child=serializers.IntegerField())
+
+
+class InfectedPersonsInputSerializer(serializers.Serializer):
+    persons_beacons_ids = serializers.ListField(child=serializers.CharField())
+
+
+class InfectedPersonsOutputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Person
+        fields = ("beacon_id", "status")
