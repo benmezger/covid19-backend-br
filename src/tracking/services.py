@@ -1,9 +1,12 @@
+from collections import OrderedDict
+from datetime import datetime
 from typing import Dict, Iterable, List, Union
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from .models import (
+    Encounter,
     Person,
     PersonRiskFactor,
     PersonStatusChange,
@@ -70,16 +73,6 @@ def person_status_change_create(
 
 
 @transaction.atomic
-def risk_factors_get() -> Iterable[RiskFactor]:
-    return RiskFactor.objects.all()
-
-
-@transaction.atomic
-def symptoms_get() -> Iterable[Symptom]:
-    return Symptom.objects.all()
-
-
-@transaction.atomic
 def person_symptom_report_bulk_create(
     *, person: Person, symptoms_ids: List[int]
 ) -> Iterable[PersonSymptomReport]:
@@ -90,9 +83,32 @@ def person_symptom_report_bulk_create(
     )
 
 
-def symptom_list() -> List[Dict[int, str]]:
-    return list(Symptom.objects.values())
+@transaction.atomic
+def encounter_bulk_create(encounters_data: List[OrderedDict]) -> None:
+    Encounter.objects.bulk_create(
+        encounter_create(**encounter_data) for encounter_data in encounters_data
+    )
 
 
-def risk_factors_list() -> List[Dict[int, str]]:
-    return list(RiskFactor.objects.values())
+@transaction.atomic
+def encounter_create(
+    *,
+    person_one_beacon_id: str,
+    person_two_beacon_id: str,
+    start_date: float,
+    end_date: float,
+    min_distance: float,
+    duration: int
+) -> Encounter:
+
+    person_one = Person.objects.get(beacon_id=person_one_beacon_id)
+    person_two = Person.objects.get(beacon_id=person_two_beacon_id)
+
+    return Encounter(
+        person_one=person_one,
+        person_two=person_two,
+        start_date=datetime.fromtimestamp(start_date),
+        end_date=datetime.fromtimestamp(end_date),
+        min_distance=min_distance,
+        duration=duration,
+    )

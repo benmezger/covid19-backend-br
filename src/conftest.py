@@ -1,13 +1,16 @@
+from datetime import datetime
+
 import pytest
 from django.contrib.auth import get_user_model
 from faker import Faker
 
 from tracking.models import (
+    UNKNOWN,
+    SUSPECT,
+    RECOVERED,
     CONFIRMED,
     NEGATIVATED,
-    RECOVERED,
-    SUSPECT,
-    UNKNOWN,
+    Encounter,
     Person,
     PersonStatusChange,
     RiskFactor,
@@ -15,6 +18,8 @@ from tracking.models import (
 )
 
 fake = Faker()
+from notification.models import Notification, Rule
+
 User = get_user_model()
 
 
@@ -29,6 +34,7 @@ def make_user(db):
         user = User.objects.create(
             email=email, first_name=first_name, last_name=last_name
         )
+        user.is_staff = True
         user.set_password(raw_password=password)
         user.save()
 
@@ -88,3 +94,46 @@ def list_of_symptoms(db):
         return symptoms
 
     yield _list_of_symptoms
+
+
+def make_encounter(db):
+    def _make_encounter(
+        person_one=person_one,
+        person_two=person_two,
+        start_date=start_date,
+        end_date=end_date,
+        min_distance=min_distance,
+        duration=duration,
+    ):
+        return Encounter.objects.create(
+            person_one=person_one,
+            person_two=person_two,
+            start_date=start_date,
+            end_date=end_date,
+            min_distance=min_distance,
+            duration=duration,
+        )
+
+    yield _make_encounter
+
+
+@pytest.fixture
+def make_notification(db, make_person, make_rule):
+    def _make_notification(person=None, rule=None, read=False):
+        if not person:
+            person = make_person()
+
+        if not rule:
+            rule = make_rule()
+
+        return Notification.objects.create(person=person, rule=rule, read=read,)
+
+    yield _make_notification
+
+
+@pytest.fixture
+def make_rule(db):
+    def _make_rule(title="Título", message="Mensagem"):
+        return Rule.objects.create(title=title, message=message)
+
+    yield _make_rule

@@ -5,7 +5,7 @@ from django.contrib import admin
 
 from rules.models import LogicalCondition, Rule, RuleCondition
 from tracking.models import RiskFactor, Symptom
-from tracking.services import risk_factors_list, symptom_list
+from tracking.selectors import get_risk_factors_list, get_symptoms_list
 
 
 class CustomRuleConditionChangeViewMixin:
@@ -13,12 +13,12 @@ class CustomRuleConditionChangeViewMixin:
         extra_context = extra_context or {}
         symptoms = []
 
-        for symptom in symptom_list():
+        for symptom in get_symptoms_list():
             symptom["text"] = symptom.pop("name")
             symptoms.append(symptom)
 
         risk_factors = []
-        for risk_factor in risk_factors_list():
+        for risk_factor in get_risk_factors_list():
             risk_factor["text"] = risk_factor.pop("name")
             risk_factors.append(risk_factor)
 

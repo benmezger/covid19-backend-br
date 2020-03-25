@@ -16,7 +16,7 @@ def test_person_create(client, db, make_risk_factor):
     }
 
     response = client.post(
-        reverse("person-list"), data=payload, content_type="application/json"
+        reverse("tracking:person-list"), data=payload, content_type="application/json"
     )
 
     person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
@@ -32,6 +32,30 @@ def test_person_create(client, db, make_risk_factor):
     assert person.risk_factors.count() == 2
 
 
+def test_person_create_existing_beacon_id(client, db, make_person, make_risk_factor):
+    person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+
+    risk_factor_1 = make_risk_factor(name="Doença cardíaca")
+    risk_factor_2 = make_risk_factor(name="Diabetes")
+
+    payload = {
+        "age": 50,
+        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+        "risk_factors_ids": [risk_factor_1.id, risk_factor_2.id],
+    }
+
+    response = client.post(
+        reverse("tracking:person-list"), data=payload, content_type="application/json"
+    )
+
+    person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+
+    assert response.status_code == 400
+    assert response.json() == {"beacon_id": ["This field must be unique."]}
+
+    assert person.risk_factors.count() == 0
+
+
 def test_person_create_without_risk_factors(client, db):
     payload = {
         "age": 50,
@@ -40,7 +64,7 @@ def test_person_create_without_risk_factors(client, db):
     }
 
     response = client.post(
-        reverse("person-list"), data=payload, content_type="application/json"
+        reverse("tracking:person-list"), data=payload, content_type="application/json"
     )
 
     person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
@@ -62,7 +86,7 @@ def test_person_update_unauthenticated(client, db, make_person):
     payload = {"status": "C"}
 
     response = client.post(
-        reverse("person-detail", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-detail", kwargs={"pk": person.beacon_id}),
         data=payload,
         content_type="application/json",
     )
@@ -77,7 +101,7 @@ def test_person_update(client, db, make_person, make_user):
     payload = {"status": "C"}
 
     response = client.patch(
-        reverse("person-detail", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-detail", kwargs={"pk": person.beacon_id}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -108,7 +132,7 @@ def test_person_update_unexisting_user(client, db, make_person, make_user):
     payload = {"status": "C"}
 
     response = client.patch(
-        reverse("person-detail", kwargs={"pk": "wrong_id"}),
+        reverse("tracking:person-detail", kwargs={"pk": "wrong_id"}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -128,7 +152,7 @@ def test_person_create_person_symptons(
     payload = {"symptoms_ids": [symptom_1.id, symptom_2.id]}
 
     response = client.post(
-        reverse("person-symptoms-report", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-symptoms-report", kwargs={"pk": person.beacon_id}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -136,3 +160,17 @@ def test_person_create_person_symptons(
 
     assert response.status_code == 201
     assert PersonSymptomReport.objects.count() == 2
+
+
+def test_person_get_notifications(client, db, make_person, make_notification):
+    person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+    notification_one = make_notification(person=person)
+    notification_two = make_notification(person=person)
+
+    response = client.get(
+        reverse("tracking:person-notification", kwargs={"pk": person.beacon_id}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == 200
+    assert len(response.json()) == 2

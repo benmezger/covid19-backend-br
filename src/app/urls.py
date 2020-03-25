@@ -17,8 +17,10 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("tracking.urls")),
+    path("", include("authentication.urls")),
+    path("", include("notification.urls")),
     path("", include("rules.urls")),
+    path("", include("tracking.urls")),
     # Enables the DRF browsable API page
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("docs/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),

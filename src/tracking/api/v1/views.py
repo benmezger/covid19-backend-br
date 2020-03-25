@@ -1,30 +1,50 @@
 from django.http import Http404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from tracking.models import Person
 from tracking import services
+from notification.api.v1.serializers import NotificationOutputSerializer
 from tracking.api.v1.serializers import (
+    EncounterInputSerializer,
     PersonInputSerializer,
     PersonOutputSerializer,
     PersonSymptomnsReportInputSerializer,
     RiskFactorSerializer,
     SymptomSerializer,
 )
+from tracking.models import Encounter, Person, RiskFactor, Symptom
+
+
+class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Encounter.objects.all()
+    serializer_class = EncounterInputSerializer
+    permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(operation_summary="encounter_batch_create. Accepts a list.")
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        services.encounter_bulk_create(encounters_data=serializer.validated_data)
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class PersonViewSet(
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet,
+    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet
 ):
+    queryset = Person.objects.all()
     serializer_class = PersonInputSerializer
     permission_classes = (IsAuthenticated,)
-    queryset = Person.objects.all()  # just because Django asks for it
 
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
         "partial_update": (IsAuthenticated(),),
+        "symptoms_report": (AllowAny(),),
+        "notification": (AllowAny(),),
     }
 
     def get_object_or_404(self, pk):
@@ -81,28 +101,24 @@ class PersonViewSet(
 
         return Response(status=status.HTTP_201_CREATED)
 
+    @swagger_auto_schema(responses={200: NotificationOutputSerializer})
+    @action(("GET",), detail=True)
+    def notification(self, request, pk):
+        person = self.get_object_or_404(pk=pk)
+        notifications = person.notifications.all()
 
-class RiskFactorViewSet(
-    mixins.ListModelMixin, viewsets.GenericViewSet,
-):
+        return Response(NotificationOutputSerializer(notifications, many=True).data)
+
+
+# Generic view. No need to overwrite anything
+class RiskFactorViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = RiskFactor.objects.all()
     serializer_class = RiskFactorSerializer
     permission_classes = (AllowAny,)
 
-    def list(self, request, *args, **kwargs):
-        risk_factors = services.risk_factors_get()
-        return Response(
-            self.get_serializer(risk_factors, many=True).data, status=status.HTTP_200_OK
-        )
 
-
-class SymptomViewset(
-    mixins.ListModelMixin, viewsets.GenericViewSet,
-):
+# Generic view. No need to overwrite anything
+class SymptomViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Symptom.objects.all()
     serializer_class = SymptomSerializer
     permission_classes = (AllowAny,)
-
-    def list(self, request, *args, **kwargs):
-        symptoms = services.symptoms_get()
-        return Response(
-            self.get_serializer(symptoms, many=True).data, status=status.HTTP_200_OK
-        )
