@@ -18,7 +18,8 @@ from tracking.models import (
 )
 
 fake = Faker()
-from notification.models import Notification, Rule
+from notification.models import Notification
+from rules.models import Rule
 
 User = get_user_model()
 
@@ -133,7 +134,7 @@ def make_notification(db, make_person, make_rule):
 
 @pytest.fixture
 def make_rule(db):
-    def _make_rule(title="Título", message="Mensagem"):
-        return Rule.objects.create(title=title, message=message)
+    def _make_rule(name="Título", message="Mensagem"):
+        return Rule.objects.create(name=name, message=message)
 
     yield _make_rule

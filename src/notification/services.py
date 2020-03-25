@@ -1,7 +1,8 @@
 from django.db import transaction
 
+from notification.models import Notification
+from rules.models import Rule
 from tracking.models import Person
-from .models import Notification, Rule
 
 
 @transaction.atomic

@@ -2,18 +2,9 @@ from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
 
-# Temporary class
-class Rule(TimeStampedModel):
-    title = models.CharField(max_length=255)
-    message = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.title
-
-
 class Notification(TimeStampedModel):
     rule = models.ForeignKey(
-        "notification.Rule",
+        "rules.Rule",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -34,7 +25,7 @@ class Notification(TimeStampedModel):
 
     @property
     def title(self):
-        return self.rule.title
+        return self.rule.name
 
     @property
     def message(self):
