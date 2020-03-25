@@ -25,22 +25,22 @@
                 var attributeOperators = ['IN', 'NOT IN'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
 
-                $.ajax("/api/v1/symptom/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
+                // $.ajax("/api/v1/symptom/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
 
                 // Sample version with context
                 // Comment line above with the AJAX call and add this one:
-                // fillPossibleValues($value, {{ symptoms|safe }}, $value.attr('default'));
+                fillPossibleValues($value, {{ symptoms|safe }}, $value.attr('default'));
             }
 
             else if ($element.val() == 'risk_factors') {
                 var attributeOperators = ['IN', 'NOT IN'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
 
-                $.ajax("/api/v1/risk-factor/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
+                // $.ajax("/api/v1/risk-factor/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
 
                 // Sample version with context
                 // Comment line above with the AJAX call and add this one:
-                // fillPossibleValues($value, {{ risk_factors|safe }}, $value.attr('default'));
+                fillPossibleValues($value, {{ risk_factors|safe }}, $value.attr('default'));
             }
             else if ($element.val() == 'age') {
                 var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
@@ -59,6 +59,7 @@
             possibleValues.forEach(element => {
                 $value.parent().prepend($('<br>'));
                 $value.parent().prepend($('<a>', { href: 'javascript:;', text: element.name, id: element.id }));
+                $value.parent().prepend($('<a>', { href: 'javascript:;', text: element.text, id: element.id }));
             });
             $value.parent().find('a').on('click', handleValueClick);
             $value.parent().find('input').hide();

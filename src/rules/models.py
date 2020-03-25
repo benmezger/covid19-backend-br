@@ -41,7 +41,7 @@ class LogicalCondition(TimeStampedModel):
     )
 
     attribute = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=ConditionAttribute.choices(),
         null=False,
         blank=False,

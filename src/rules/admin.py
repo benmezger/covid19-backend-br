@@ -4,8 +4,8 @@ from django import forms
 from django.contrib import admin
 
 from rules.models import LogicalCondition, Rule, RuleCondition
-from tracking.models import Symptom, RiskFactor
-from tracking.services import symptom_list, risk_factors_list
+from tracking.models import RiskFactor, Symptom
+from tracking.services import risk_factors_list, symptom_list
 
 
 class CustomRuleConditionChangeViewMixin:
@@ -73,6 +73,7 @@ class RuleConditionCustomForm(forms.ModelForm):
                 id__in=self.cleaned_data.pop("symptom_ids")
             )
             self.cleaned_data.pop("value")
+
             super().save(commit)
             self.instance.symptoms.add(*symptoms)
         elif self.cleaned_data.get("risk_factors_ids", None):
