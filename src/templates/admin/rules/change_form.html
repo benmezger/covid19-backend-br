@@ -1,0 +1,137 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        $ = django.jQuery;
+        var operators;
+
+        var handleAttributeChange = $element => {
+            var $rootElement = $element.parent().parent();
+            var $operator = $rootElement.find('select[id*="operator"]');
+            var $value = $rootElement.find('input[id*="value"]');
+
+            clearOptionsFromOperator($operator);
+            if (!$value.attr('default')) {
+                var defaultInputValue = $value.val();
+                $value.attr('default', defaultInputValue);
+                $value.val('');
+            }
+            $value.show();
+            $value.parent().find('a, br').remove();
+
+            if ($element.val() == 'symptoms') {
+                var attributeOperators = ['IN'];
+                fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+
+                // $.ajax("/api/v1/symptom/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
+
+                // Sample version with context
+                // Comment line above with the AJAX call and add this one:
+                fillPossibleValues($value, {{ symptoms|safe }}, $value.attr('default'));
+            }
+
+            else if ($element.val() == 'risk_factors') {
+                var attributeOperators = ['IN'];
+                fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+
+                // $.ajax("/api/v1/risk-factor/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
+
+                // Sample version with context
+                // Comment line above with the AJAX call and add this one:
+                fillPossibleValues($value, {{ risk_factors|safe }}, $value.attr('default'));
+            }
+            else if ($element.val() == 'age') {
+                var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
+                fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+                $value.val($value.attr('default'));
+            }
+            else if ($element.val() == 'encounter_distance') {
+                var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
+                fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+                $value.val($value.attr('default'));
+            }
+            else if ($element.val() == 'encounter_duration') {
+                var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
+                fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
+                $value.val($value.attr('default'));
+            }
+
+        }
+
+        var fillOperatorOptions = ($operator, attributeOperators, defaultValue) => {
+            var filtered_operators = operators.filter(operator => attributeOperators.includes(operator.value));
+            filtered_operators.forEach(e => $operator.append($('<option>', { value: e.value, text: e.text })));
+            $operator.val(defaultValue);
+        }
+
+        var fillPossibleValues = ($value, possibleValues, defaultValues) => {
+            possibleValues.forEach(element => {
+                $value.parent().prepend($('<br>'));
+                $value.parent().prepend($('<a>', { href: 'javascript:;', text: element.name, id: element.id }));
+                $value.parent().prepend($('<a>', { href: 'javascript:;', text: element.text, id: element.id }));
+            });
+            $value.parent().find('a').on('click', handleValueClick);
+            $value.parent().find('input').hide();
+            defaultValues.split(', ').map(id => $value.parent().find(`a[id="${id}"]`).click());
+        }
+
+        var handleValueClick = event => {
+            var $target = $(event.target);
+            var id = $target.attr('id');
+            var textField = $(event.target).parent().find('input[id*="value"]');
+            var values = textField.val().split(', ').filter(item => item);
+
+            const index = values.indexOf(id);
+            if (index > -1) {
+                values.splice(index, 1);
+                $target.css({
+                    fontWeight: 'normal',
+                    color: '#447e9b',
+                });
+
+            }
+            else {
+                $target.css({
+                    fontWeight: 'bold',
+                    color: 'red',
+                });
+                values.push(id);
+            }
+
+            textField.val(values.join(', '));
+        }
+
+        var clearOptionsFromOperator = $element => {
+            if (!$element.attr('default')) {
+                var defaultValue = $element.val();
+                $element.attr('default', defaultValue);
+            }
+            $element.find('option').map(function() { if ($(this).val() != "") { $(this).remove() } })
+        }
+
+		$(document).ready(function() {
+            // Get available operators
+            operators = $('#id_logical_conditions-0-operator option').map(function() {
+                return { text: $(this).text(), value: $(this).val() };
+            }).get();
+
+            // Clean all operators
+            document.querySelectorAll('select[id*="operator"]').forEach(element => clearOptionsFromOperator($(element)));
+
+            $('select[id*="attribute"]')
+            .change(function(e) {
+                handleAttributeChange($(this));
+            })
+            .each(function(index, element) {
+                if ($(element).val() != '') {
+                    handleAttributeChange($(element));
+                }
+            });
+
+            // Load values on start
+            $('[logical_conditions-0-attribute]')
+		});
+	</script>
+{% endblock %}
