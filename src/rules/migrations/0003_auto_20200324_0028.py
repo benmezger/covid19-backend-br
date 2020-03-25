@@ -6,18 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rules', '0002_logicalcondition_rulecondition'),
+        ("rules", "0002_logicalcondition_rulecondition"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='logicalcondition',
-            name='attribute',
-            field=models.CharField(choices=[('age', 'Idade'), ('symptoms', 'Symptoms')], max_length=10, verbose_name='Atributo'),
+            model_name="logicalcondition",
+            name="attribute",
+            field=models.CharField(
+                choices=[("age", "Idade"), ("symptoms", "Symptoms")],
+                max_length=10,
+                verbose_name="Atributo",
+            ),
         ),
         migrations.AlterField(
-            model_name='logicalcondition',
-            name='operator',
-            field=models.CharField(choices=[('gt', '>'), ('gte', '>='), ('lt', '<'), ('lte', '=<'), ('IN', 'in'), ('NOT IN', 'not in')], max_length=10, verbose_name='Operador'),
+            model_name="logicalcondition",
+            name="operator",
+            field=models.CharField(
+                choices=[
+                    ("gt", ">"),
+                    ("gte", ">="),
+                    ("lt", "<"),
+                    ("lte", "=<"),
+                    ("IN", "in"),
+                    ("NOT IN", "not in"),
+                ],
+                max_length=10,
+                verbose_name="Operador",
+            ),
         ),
     ]

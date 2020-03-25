@@ -3,8 +3,14 @@ from typing import Dict, Iterable, List, Union
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from .models import (Person, PersonRiskFactor, PersonStatusChange,
-                     PersonSymptomReport, RiskFactor, Symptom)
+from .models import (
+    Person,
+    PersonRiskFactor,
+    PersonStatusChange,
+    PersonSymptomReport,
+    RiskFactor,
+    Symptom,
+)
 
 User = get_user_model()
 

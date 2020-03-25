@@ -7,14 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rules', '0003_auto_20200324_0028'),
-        ('tracking', '0004_symptom_rule'),
+        ("rules", "0003_auto_20200324_0028"),
+        ("tracking", "0004_symptom_rule"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='riskfactor',
-            name='rule',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='risk_factors', to='rules.LogicalCondition'),
+            model_name="riskfactor",
+            name="rule",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="risk_factors",
+                to="rules.LogicalCondition",
+            ),
         ),
     ]

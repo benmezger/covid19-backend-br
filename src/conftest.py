@@ -2,9 +2,17 @@ import pytest
 from django.contrib.auth import get_user_model
 from faker import Faker
 
-from tracking.models import (CONFIRMED, NEGATIVATED, RECOVERED, SUSPECT,
-                             UNKNOWN, Person, PersonStatusChange, RiskFactor,
-                             Symptom)
+from tracking.models import (
+    CONFIRMED,
+    NEGATIVATED,
+    RECOVERED,
+    SUSPECT,
+    UNKNOWN,
+    Person,
+    PersonStatusChange,
+    RiskFactor,
+    Symptom,
+)
 
 fake = Faker()
 User = get_user_model()

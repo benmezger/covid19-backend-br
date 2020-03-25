@@ -7,43 +7,74 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rules', '0003_auto_20200324_0028'),
+        ("rules", "0003_auto_20200324_0028"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='logicalcondition',
-            name='attribute',
-            field=models.CharField(choices=[('age', 'Age'), ('symptoms', 'Symptoms'), ('risk_factors', 'Risk Factors')], max_length=10, verbose_name='Attribute'),
+            model_name="logicalcondition",
+            name="attribute",
+            field=models.CharField(
+                choices=[
+                    ("age", "Age"),
+                    ("symptoms", "Symptoms"),
+                    ("risk_factors", "Risk Factors"),
+                ],
+                max_length=10,
+                verbose_name="Attribute",
+            ),
         ),
         migrations.AlterField(
-            model_name='logicalcondition',
-            name='operator',
-            field=models.CharField(choices=[('gt', '>'), ('gte', '>='), ('lt', '<'), ('lte', '=<'), ('IN', 'in'), ('NOT IN', 'not in')], max_length=10, verbose_name='Operator'),
+            model_name="logicalcondition",
+            name="operator",
+            field=models.CharField(
+                choices=[
+                    ("gt", ">"),
+                    ("gte", ">="),
+                    ("lt", "<"),
+                    ("lte", "=<"),
+                    ("IN", "in"),
+                    ("NOT IN", "not in"),
+                ],
+                max_length=10,
+                verbose_name="Operator",
+            ),
         ),
         migrations.AlterField(
-            model_name='logicalcondition',
-            name='rule_condition',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='logical_conditions', to='rules.RuleCondition', verbose_name='Condition'),
+            model_name="logicalcondition",
+            name="rule_condition",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="logical_conditions",
+                to="rules.RuleCondition",
+                verbose_name="Condition",
+            ),
         ),
         migrations.AlterField(
-            model_name='logicalcondition',
-            name='value',
-            field=models.CharField(max_length=100, verbose_name='Value'),
+            model_name="logicalcondition",
+            name="value",
+            field=models.CharField(max_length=100, verbose_name="Value"),
         ),
         migrations.AlterField(
-            model_name='rule',
-            name='message',
-            field=models.CharField(max_length=255, verbose_name='Message'),
+            model_name="rule",
+            name="message",
+            field=models.CharField(max_length=255, verbose_name="Message"),
         ),
         migrations.AlterField(
-            model_name='rule',
-            name='name',
-            field=models.CharField(max_length=255, verbose_name='Name'),
+            model_name="rule",
+            name="name",
+            field=models.CharField(max_length=255, verbose_name="Name"),
         ),
         migrations.AlterField(
-            model_name='rulecondition',
-            name='rule',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='conditions', to='rules.Rule', verbose_name='Rule'),
+            model_name="rulecondition",
+            name="rule",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="conditions",
+                to="rules.Rule",
+                verbose_name="Rule",
+            ),
         ),
     ]
