@@ -9,11 +9,6 @@ from tracking.models import (
     PersonStatusChange,
     RiskFactor,
     Symptom,
-    UNKNOWN,
-    SUSPECT,
-    RECOVERED,
-    CONFIRMED,
-    NEGATIVATED,
 )
 
 from notification.models import Notification, Rule
@@ -59,8 +54,8 @@ def make_person_status_change(db):
 
         return PersonStatusChange.objects.create(
             person=person,
-            previous=UNKNOWN,
-            next=RECOVERED,
+            previous=Person.UNKNOWN,
+            next=Person.RECOVERED,
             health_professional=health_professional,
         )
 

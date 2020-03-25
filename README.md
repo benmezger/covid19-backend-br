@@ -1,98 +1,76 @@
-# Django DRF Boilerplate
+# covid19-backend-br
 
-Boilerplate project using Django and Django REST Framework.
-Currently supporting only Python 3.x.
+This application aims to help out people on knowing if they met someone with covid19.
 
-**IMPORTANT**:
-Docker Compose is used _just_ for development environment. The Dockerfile works without it.
+[![CircleCI](https://circleci.com/gh/benmezger/covid19-backend-br/tree/dev.svg?style=svg&circle-token=bac59254d41e1efa1be5c97fc7545faf0257c186)](https://circleci.com/gh/benmezger/covid19-backend-br/tree/dev)
+[![Black - Formatter](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## How to install with Pyenv
+
+## Setup the Project from Scratch
+
+First of all, make sure you have this:
+- `Docker`
+- `local.env` file
+- `python` 3.7
+
+Then you are ready to start:
+
+1. Clone the repo and get in the right branch
+```bash
+git clone https://github.com/benmezger/covid19-backend-br.git
+git checkout dev
+```
+
+2. Docker containers:
+
+2.1. If you want to launch both db and web containers:
+```bash
+docker-compose up --build
+```
+
+2.2. If you want to launch just the db container instance and use the web locally:
+```bash
+docker-compose up -d db
+```
+
+3. If you took the `2.2` option you'll need to install the project requirements:
 
 ```bash
-$ pyenv virtualenv 3.8.0 <project_name>
-$ pyenv activate <project_name>
-$ pip install Django==2.2.7
-$ django-admin.py startproject \
-  --template=https://github.com/CheesecakeLabs/django-drf-boilerplate/archive/master.zip \
-  <project_name> .
-$ pip install -r requirements/dev.txt
-$ python src/manage.py runserver
+python3.7 -m venv venv
+source venv/bin/activate
+pip install -r requirements/dev.txt -r requirements.txt
 ```
 
-## How to install with Docker Compose
+4. On another panel:
+```bash
+python src/manage.py runserver
+```
+
+That's it! You can open your application [here](localhost:8000/admin/).
+
+## Testing
+
+We have tests for the Python code. The steps to run them are:
+
+* Activate your virtual environment with your preferred tool. In case you're using pipenv:
+```bash
+source venv/bin/activate
+```
+
+* Install the requirements with pip
+```bash
+pip install -r requirements/test.txt
+```
+
+* Run the tests
+```bash
+pytest
+```
+
+You can learn more about pytest features [here]([https://docs.pytest.org/en/latest/](https://docs.pytest.org/en/latest/)).
+
+## Linting
 
 ```bash
-$ django-admin.py startproject \
-  --template=https://github.com/CheesecakeLabs/django-drf-boilerplate/archive/master.zip \
-  <project_name> .
-$ docker-compose up
+black .
 ```
-
-## Install Black code formatter to your editor
-
-Check code syntax and style before committing changes.
-
-Pre-commit hook may be installed using the following steps:
-
-```bash
-$ pip install -r requirements/dev.txt
-$ pre-commit install
-```
-
-Or run it manually:
-
-```bash
-$ black .
-```
-
-## The initial workflow on circleci
-
-Follow those map of branchs and 
-![](https://i.ibb.co/82xhB1j/Django-Boilerplate-Pipeline-1.jpg)
-
-update the image name at config.yaml and docker-compose.test.yaml
-```yaml
-references:
-  image_name: &image_name organization-name/project-name
-```
-```yaml
-web:
-    image: organization-name/project-name
-```
-
-don't forget to define these environment variables in your circleci project settings:
-- `AWS_ACCOUNT_ID`
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_DEFAULT_REGION` (ex: `us-east-1`)
-- `AWS_RESOURCE_NAME_PREFIX` (ex: `${project_name}-backend`)
-- `AWS_SERVICE_NAME_LAB` (ex: `${project_name}-backend-lab`)
-- `AWS_SERVICE_NAME_STAGING` (ex: `${project_name}-backend-staging`)
-- `AWS_SERVICE_NAME_PROD` (ex: `${project_name}-backend-production`)
-- `AWS_CLUSTER_NAME_LAB` (ex: `${project_name}-lab`)
-- `AWS_CLUSTER_NAME_STAGING` (ex: `${project_name}-staging`)
-- `AWS_CLUSTER_NAME_PROD` (ex: `${project_name}-production`)
-- `CC_TEST_REPORTER_ID` ([from CodeClimate](https://docs.codeclimate.com/docs/finding-your-test-coverage-token))
-- `ENVIRONMENT` (ex: `development`)
-- `DJANGO_DEBUG` (ex: `True`)
-- `DJANGO_ALLOWED_HOSTS` (ex: `*,`)
-- `DJANGO_SECRET_KEY`
-
-
-## Database
-
-Running database on latest PostgreSQL Docker container running in the port `5432`. The connection is defined by the `dj-database-url` package. There's a race condition script to avoid running Django before the database goes up.
-
-## Handling Business Error
-
-```
-from helpers.business_errors import BusinessException, EXAMPLE_ERROR
-...
-if logic_check:
-    raise BusinessException(error_code=EXAMPLE_ERROR)
-```
-`BusinessException` extends `APIException` (Django Rest Framework) and `ValidationError` (Django), so it is handled by their middlewares by default.
-
-## Docs
-
-Let's face it, human memory sucks. Will you remember every detail that involves your project 6 months from now? How about when the pressure is on? A project with good documentation that explains all the facets, interactions and architectural choices means you and your teammates won't have to spend hours trying to figure it out later. You can find a template to get started [here](https://github.com/CheesecakeLabs/django-drf-boilerplate/wiki/Docs-Template).

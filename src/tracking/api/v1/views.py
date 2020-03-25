@@ -1,14 +1,16 @@
 from django.http import Http404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from tracking import services
+from tracking import selectors, services
 from notification.api.v1.serializers import NotificationOutputSerializer
 from tracking.api.v1.serializers import (
     EncounterInputSerializer,
+    InfectedPersonsInputSerializer,
+    InfectedPersonsOutputSerializer,
     PersonInputSerializer,
     PersonOutputSerializer,
     PersonSymptomnsReportInputSerializer,
@@ -16,6 +18,30 @@ from tracking.api.v1.serializers import (
     SymptomSerializer,
 )
 from tracking.models import Encounter, Person, RiskFactor, Symptom
+
+
+@swagger_auto_schema(
+    **{
+        "operation_summary": "infected persons",
+        "method": "POST",
+        "request_body": InfectedPersonsInputSerializer,
+        "responses": {200: InfectedPersonsOutputSerializer},
+    }
+)
+@api_view(("POST",))
+@permission_classes((AllowAny,))
+def infected_persons(request):
+    serializer = InfectedPersonsInputSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    queryset = selectors.get_possible_infected_persons_in_ids(
+        persons_beacons_ids=serializer.validated_data["persons_beacons_ids"]
+    )
+
+    return Response(
+        InfectedPersonsOutputSerializer(instance=queryset, many=True).data,
+        status.HTTP_200_OK,
+    )
 
 
 class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
