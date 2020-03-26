@@ -1,20 +1,19 @@
 from collections import OrderedDict
 from datetime import datetime
-from typing import Iterable, List, Union
+from typing import Dict, Iterable, List, Union
 
-from django.db import transaction
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from .models import (
     Encounter,
     Person,
+    PersonRiskFactor,
     PersonStatusChange,
     PersonSymptomReport,
-    PersonRiskFactor,
     RiskFactor,
     Symptom,
 )
-
 
 User = get_user_model()
 

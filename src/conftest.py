@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from django.contrib.auth import get_user_model
+from faker import Faker
 
 from tracking.models import (
     Encounter,
@@ -11,7 +12,9 @@ from tracking.models import (
     Symptom,
 )
 
-from notification.models import Notification, Rule
+fake = Faker()
+from notification.models import Notification
+from rules.models import Rule
 
 User = get_user_model()
 
@@ -79,6 +82,16 @@ def make_symptom(db):
 
 
 @pytest.fixture
+def list_of_symptoms(db):
+    def _list_of_symptoms(size=10):
+        symptoms = []
+        for i in range(size):
+            symptoms.append(Symptom.objects.create(name=fake.name()))
+        return symptoms
+
+    yield _list_of_symptoms
+
+
 def make_encounter(db):
     def _make_encounter(
         person_one=person_one,
@@ -116,7 +129,7 @@ def make_notification(db, make_person, make_rule):
 
 @pytest.fixture
 def make_rule(db):
-    def _make_rule(title="Título", message="Mensagem"):
-        return Rule.objects.create(title=title, message=message)
+    def _make_rule(name="Título", message="Mensagem"):
+        return Rule.objects.create(name=name, message=message)
 
     yield _make_rule
