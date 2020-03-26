@@ -7,8 +7,7 @@ from faker import Faker
 
 from notification.models import Notification
 from rules.models import Rule
-from tracking.models import (Encounter, Person, PersonStatusChange, RiskFactor,
-                             Symptom)
+from tracking.models import Encounter, Person, PersonStatusChange, RiskFactor, Symptom
 
 fake = Faker()
 
