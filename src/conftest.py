@@ -2,19 +2,15 @@ from datetime import datetime
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from faker import Faker
 
-from tracking.models import (
-    Encounter,
-    Person,
-    PersonStatusChange,
-    RiskFactor,
-    Symptom,
-)
-
-fake = Faker()
 from notification.models import Notification
 from rules.models import Rule
+from tracking.models import (Encounter, Person, PersonStatusChange, RiskFactor,
+                             Symptom)
+
+fake = Faker()
 
 User = get_user_model()
 
@@ -133,3 +129,12 @@ def make_rule(db):
         return Rule.objects.create(name=name, message=message)
 
     yield _make_rule
+
+
+@pytest.fixture(scope="session")
+def create_rules_from_json_dump(django_db_setup, django_db_blocker):
+    def _create_rules_from_json_dump(path="src/rules/tests/fixtures/rule_objects.json"):
+        with django_db_blocker.unblock():
+            call_command("loaddata", path)
+
+    yield _create_rules_from_json_dump
