@@ -34,7 +34,9 @@ class RuleCustomForm(forms.ModelForm):
         model = RuleCondition
         fields = "__all__"
 
-    conditions = forms.ModelMultipleChoiceField(queryset=RuleCondition.objects.all())
+    conditions = forms.ModelMultipleChoiceField(
+        queryset=RuleCondition.objects.all(), required=True
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
