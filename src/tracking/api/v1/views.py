@@ -25,7 +25,7 @@ from tracking.models import Encounter, Person, RiskFactor, Symptom
         "operation_summary": "infected persons",
         "method": "POST",
         "request_body": InfectedPersonsInputSerializer,
-        "responses": {200: InfectedPersonsOutputSerializer},
+        "responses": {200: InfectedPersonsOutputSerializer(many=True)},
     }
 )
 @api_view(("POST",))
