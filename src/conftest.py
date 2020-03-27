@@ -1,18 +1,15 @@
+from datetime import datetime
+
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
+from faker import Faker
 
-from tracking.models import (
-    Encounter,
-    Person,
-    PersonStatusChange,
-    RiskFactor,
-    Symptom,
-    UNKNOWN,
-    SUSPECT,
-    RECOVERED,
-    CONFIRMED,
-    NEGATIVATED,
-)
+from notification.models import Notification
+from rules.models import Rule
+from tracking.models import Encounter, Person, PersonStatusChange, RiskFactor, Symptom
+
+fake = Faker()
 
 User = get_user_model()
 
@@ -55,8 +52,8 @@ def make_person_status_change(db):
 
         return PersonStatusChange.objects.create(
             person=person,
-            previous=UNKNOWN,
-            next=RECOVERED,
+            previous=Person.UNKNOWN,
+            next=Person.RECOVERED,
             health_professional=health_professional,
         )
 
@@ -80,6 +77,16 @@ def make_symptom(db):
 
 
 @pytest.fixture
+def list_of_symptoms(db):
+    def _list_of_symptoms(size=10):
+        symptoms = []
+        for i in range(size):
+            symptoms.append(Symptom.objects.create(name=fake.name()))
+        return symptoms
+
+    yield _list_of_symptoms
+
+
 def make_encounter(db):
     def _make_encounter(
         person_one=person_one,
@@ -99,3 +106,34 @@ def make_encounter(db):
         )
 
     yield _make_encounter
+
+
+@pytest.fixture
+def make_notification(db, make_person, make_rule):
+    def _make_notification(person=None, rule=None, read=False):
+        if not person:
+            person = make_person()
+
+        if not rule:
+            rule = make_rule()
+
+        return Notification.objects.create(person=person, rule=rule, read=read,)
+
+    yield _make_notification
+
+
+@pytest.fixture
+def make_rule(db):
+    def _make_rule(name="Título", message="Mensagem"):
+        return Rule.objects.create(name=name, message=message)
+
+    yield _make_rule
+
+
+@pytest.fixture(scope="session")
+def create_rules_from_json_dump(django_db_setup, django_db_blocker):
+    def _create_rules_from_json_dump(path="src/rules/tests/fixtures/rule_objects.json"):
+        with django_db_blocker.unblock():
+            call_command("loaddata", path)
+
+    yield _create_rules_from_json_dump

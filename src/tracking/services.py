@@ -1,19 +1,19 @@
+from collections import OrderedDict
 from datetime import datetime
-from typing import Iterable, List, Union
+from typing import Dict, Iterable, List, Union
 
-from django.db import transaction
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from .models import (
     Encounter,
     Person,
+    PersonRiskFactor,
     PersonStatusChange,
     PersonSymptomReport,
-    PersonRiskFactor,
     RiskFactor,
     Symptom,
 )
-
 
 User = get_user_model()
 
@@ -54,6 +54,7 @@ def person_update_status(
         next_status=status,
     )
 
+    # caching purposes
     person.status = status
     person.save()
 
@@ -84,6 +85,13 @@ def person_symptom_report_bulk_create(
 
 
 @transaction.atomic
+def encounter_bulk_create(encounters_data: List[OrderedDict]) -> None:
+    Encounter.objects.bulk_create(
+        encounter_create(**encounter_data) for encounter_data in encounters_data
+    )
+
+
+@transaction.atomic
 def encounter_create(
     *,
     person_one_beacon_id: str,
@@ -92,12 +100,12 @@ def encounter_create(
     end_date: float,
     min_distance: float,
     duration: int
-) -> Union[Encounter, None]:
+) -> Encounter:
 
     person_one = Person.objects.get(beacon_id=person_one_beacon_id)
     person_two = Person.objects.get(beacon_id=person_two_beacon_id)
 
-    return Encounter.objects.create(
+    return Encounter(
         person_one=person_one,
         person_two=person_two,
         start_date=datetime.fromtimestamp(start_date),

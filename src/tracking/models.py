@@ -5,23 +5,21 @@ from django_extensions.db.models import TimeStampedModel
 from .managers import EncounterManager
 
 
-UNKNOWN = "D"
-SUSPECT = "S"
-RECOVERED = "R"
-CONFIRMED = "C"
-NEGATIVATED = "N"
-
-
-PERSON_STATUS_CHOICES = (
-    (UNKNOWN, _("Desconhecido")),
-    (SUSPECT, _("Suspeita de Corona Vírus")),
-    (RECOVERED, _("Recuperado")),
-    (CONFIRMED, _("Corona Vírus Confirmado")),
-    (NEGATIVATED, _("Negativado")),
-)
-
-
 class Person(models.Model):
+    UNKNOWN = "D"
+    SUSPECT = "S"
+    RECOVERED = "R"
+    CONFIRMED = "C"
+    NEGATIVATED = "N"
+
+    PERSON_STATUS_CHOICES = (
+        (UNKNOWN, _("Desconhecido")),
+        (SUSPECT, _("Suspeita de Corona Vírus")),
+        (RECOVERED, _("Recuperado")),
+        (CONFIRMED, _("Corona Vírus Confirmado")),
+        (NEGATIVATED, _("Negativado")),
+    )
+
     age = models.PositiveIntegerField()
     status = models.CharField(
         choices=PERSON_STATUS_CHOICES, default=UNKNOWN, max_length=1
@@ -39,10 +37,10 @@ class PersonStatusChange(TimeStampedModel):
         related_name="person_status_changes",
     )
     previous = models.CharField(
-        choices=PERSON_STATUS_CHOICES, default=UNKNOWN, max_length=1
+        choices=Person.PERSON_STATUS_CHOICES, default=Person.UNKNOWN, max_length=1
     )
     next = models.CharField(
-        choices=PERSON_STATUS_CHOICES, default=UNKNOWN, max_length=1
+        choices=Person.PERSON_STATUS_CHOICES, default=Person.UNKNOWN, max_length=1
     )
     health_professional = models.ForeignKey(
         "users.User", on_delete=models.SET_NULL, null=True, blank=True
@@ -72,6 +70,12 @@ class PersonRiskFactor(TimeStampedModel):
 
 class RiskFactor(models.Model):
     name = models.CharField(max_length=255)
+    rule = models.ForeignKey(
+        "rules.LogicalCondition",
+        related_name="risk_factors",
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     class Meta:
         verbose_name_plural = "Risk Factors"
@@ -82,6 +86,12 @@ class RiskFactor(models.Model):
 
 class Symptom(models.Model):
     name = models.CharField(max_length=255)
+    rule = models.ForeignKey(
+        "rules.LogicalCondition",
+        related_name="symptoms",
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     def __str__(self):
         return self.name

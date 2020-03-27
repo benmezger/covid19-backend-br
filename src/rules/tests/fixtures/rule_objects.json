@@ -1,0 +1,78 @@
+[
+  {
+    "fields": {
+      "enabled": true,
+      "message": "Hello rule 1",
+      "name": "Rule 1",
+      "modified": "2020-03-26T21:00:41.233Z",
+      "created": "2020-03-26T21:00:41.231Z"
+    },
+    "pk": 1,
+    "model": "rules.rule"
+  },
+  {
+    "fields": {
+      "enabled": true,
+      "message": "Hello rule 2",
+      "name": "Rule 2",
+      "modified": "2020-03-26T21:00:50.449Z",
+      "created": "2020-03-26T21:00:50.448Z"
+    },
+    "pk": 2,
+    "model": "rules.rule"
+  },
+  {
+    "fields": {
+      "rule": 1,
+      "modified": "2020-03-26T22:54:31.884Z",
+      "created": "2020-03-26T21:10:52.189Z"
+    },
+    "pk": 1,
+    "model": "rules.rulecondition"
+  },
+  {
+    "fields": {
+      "rule": 2,
+      "modified": "2020-03-26T22:34:45.202Z",
+      "created": "2020-03-26T22:34:45.202Z"
+    },
+    "pk": 2,
+    "model": "rules.rulecondition"
+  },
+  {
+    "fields": {
+      "value": "12",
+      "operator": "gt",
+      "attribute": "age",
+      "rule_condition": 1,
+      "modified": "2020-03-26T21:10:52.191Z",
+      "created": "2020-03-26T21:10:52.191Z"
+    },
+    "pk": 1,
+    "model": "rules.logicalcondition"
+  },
+  {
+    "fields": {
+      "value": "12",
+      "operator": "gt",
+      "attribute": "age",
+      "rule_condition": 2,
+      "modified": "2020-03-26T22:34:45.204Z",
+      "created": "2020-03-26T22:34:45.204Z"
+    },
+    "pk": 2,
+    "model": "rules.logicalcondition"
+  },
+  {
+    "fields": {
+      "value": "12",
+      "operator": "lt",
+      "attribute": "encounter_distance",
+      "rule_condition": 1,
+      "modified": "2020-03-26T22:54:31.885Z",
+      "created": "2020-03-26T22:54:31.885Z"
+    },
+    "pk": 3,
+    "model": "rules.logicalcondition"
+  }
+]
