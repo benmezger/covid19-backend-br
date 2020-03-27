@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,6 +24,7 @@ class RuleViewSet(APIView):
     def get_queryset(self):
         return RuleCondition.objects.filter(rule__enabled=True)
 
+    @swagger_auto_schema(responses={200: OutputSerializer(many=True)})
     def get(self, request):
         output = self.OutputSerializer(self.get_queryset(), many=True)
         return Response(output.data, status=status.HTTP_200_OK)
