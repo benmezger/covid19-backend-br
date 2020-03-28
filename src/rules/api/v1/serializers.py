@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from rules.models import LogicalCondition, RuleCondition
+from rules.models import LogicalCondition
 
 
 class LogicalConditionSerializer(serializers.ModelSerializer):
@@ -11,11 +11,3 @@ class LogicalConditionSerializer(serializers.ModelSerializer):
             "operator",
             "value",
         )
-
-
-class RuleConditionSerializer(serializers.ModelSerializer):
-    logical_conditions = LogicalConditionSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = RuleCondition
-        fields = ("logical_conditions",)

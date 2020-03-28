@@ -3,7 +3,6 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rules.api.v1.serializers import RuleConditionSerializer
 from rules.models import RuleCondition
 from utils.drf.utils import inline_serializer
 
@@ -12,6 +11,7 @@ class RuleViewSet(APIView):
     class OutputSerializer(serializers.Serializer):
         name = serializers.CharField(required=True, source="rule.name")
         message = serializers.CharField(required=True, source="rule.message")
+        any = serializers.BooleanField(required=True, source="rule.any")
         logical_conditions = inline_serializer(
             fields={
                 "attribute": serializers.CharField(required=True),

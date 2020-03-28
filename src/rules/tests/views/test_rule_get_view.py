@@ -10,6 +10,7 @@ def test_rule_get(client, create_rules_from_json_dump):
     assert response.json() == [
         {
             "name": "Rule 1",
+            "any": True,
             "message": "Hello rule 1",
             "logical_conditions": [
                 {"attribute": "encounter_distance", "operator": "lt", "value": "12"},
@@ -18,6 +19,7 @@ def test_rule_get(client, create_rules_from_json_dump):
         },
         {
             "name": "Rule 2",
+            "any": True,
             "message": "Hello rule 2",
             "logical_conditions": [
                 {"attribute": "age", "operator": "gt", "value": "12"}
