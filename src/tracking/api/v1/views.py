@@ -136,7 +136,7 @@ class PersonViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         return Response(status=status.HTTP_201_CREATED)
 
-    @swagger_auto_schema(responses={200: NotificationOutputSerializer})
+    @swagger_auto_schema(responses={200: NotificationOutputSerializer(many=True)})
     @action(("GET",), detail=False)
     def notification(self, request, *args, **kwargs):
         person = request.user
