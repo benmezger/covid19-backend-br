@@ -43,6 +43,8 @@ THIRD_PARTY_APPS = [
     "versatileimagefield",
     "django_extensions",
     "drf_yasg",
+    "constance",
+    "constance.backends.database",
 ]
 
 PROJECT_APPS = ["authentication", "notification", "rules", "tracking", "users"]
@@ -180,3 +182,12 @@ VERSATILEIMAGEFIELD_SETTINGS = {
 #         ('gallery_large', 'crop__800x450'),
 #     ],
 # }
+
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+CONSTANCE_CONFIG = {
+    "INCUBATION_DAYS": (
+        14,
+        "Covid-19 incubation time. Store person encounters only for this period.",
+        int,
+    ),
+}
