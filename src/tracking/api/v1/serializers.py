@@ -29,6 +29,11 @@ class PersonOutputSerializer(serializers.ModelSerializer):
         fields = ("id", "age", "sex", "beacon_id", "status")
 
 
+class PersonCreationOutputSerializer(PersonOutputSerializer):
+    class Meta(PersonOutputSerializer.Meta):
+        fields = PersonOutputSerializer.Meta.fields + ("token",)
+
+
 class RiskFactorSerializer(serializers.ModelSerializer):
     class Meta:
         model = RiskFactor

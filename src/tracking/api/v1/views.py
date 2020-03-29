@@ -13,6 +13,7 @@ from tracking.api.v1.serializers import (
     InfectedPersonsOutputSerializer,
     PersonInputSerializer,
     PersonOutputSerializer,
+    PersonCreationOutputSerializer,
     PersonSymptomnsReportInputSerializer,
     RiskFactorSerializer,
     SymptomSerializer,
@@ -70,8 +71,8 @@ class PersonViewSet(
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
         "partial_update": (IsAuthenticated(),),
-        "symptoms_report": (AllowAny(),),
-        "notification": (AllowAny(),),
+        "symptoms_report": (IsAuthenticated(),),
+        "notification": (IsAuthenticated(),),
     }
 
     def get_serializer_class(self):
@@ -83,6 +84,7 @@ class PersonViewSet(
     def get_permissions(self):
         return self._PERMISSION_CLASSES.get(self.action, super().get_permissions())
 
+    @swagger_auto_schema(responses={200: PersonCreationOutputSerializer})
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -90,7 +92,8 @@ class PersonViewSet(
         person = services.person_create(**serializer.validated_data)
 
         return Response(
-            PersonOutputSerializer(instance=person).data, status=status.HTTP_201_CREATED
+            PersonCreationOutputSerializer(instance=person).data,
+            status=status.HTTP_201_CREATED,
         )
 
     def partial_update(self, request, pk=None, *args, **kwargs):
@@ -109,13 +112,12 @@ class PersonViewSet(
             PersonOutputSerializer(instance=person).data, status=status.HTTP_200_OK
         )
 
-    @action(("POST",), detail=True)
+    @action(("POST",), detail=False)
     def symptoms_report(self, request, *args, **kwargs):
-        person = self.get_object()
-
         serializer = PersonSymptomnsReportInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        person = request.user
         services.person_symptom_report_bulk_create(
             person=person, symptoms_ids=serializer.validated_data["symptoms_ids"]
         )
@@ -123,9 +125,9 @@ class PersonViewSet(
         return Response(status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(responses={200: NotificationOutputSerializer})
-    @action(("GET",), detail=True)
+    @action(("GET",), detail=False)
     def notification(self, request, *args, **kwargs):
-        person = self.get_object()
+        person = request.user
         notifications = person.notifications.all()
 
         return Response(NotificationOutputSerializer(notifications, many=True).data)
