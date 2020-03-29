@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+
 from tracking.services import encounter_create
 
 
@@ -16,6 +17,7 @@ def test_encounter_create(make_person, make_user):
         end_date=end_date,
         duration=10,
         min_distance=10.0,
+        count=1,
     )
 
     assert encounter.person_one == person_one
@@ -24,3 +26,4 @@ def test_encounter_create(make_person, make_user):
     assert encounter.end_date == datetime.fromtimestamp(end_date)
     assert encounter.min_distance == 10.0
     assert encounter.duration == 10
+    assert encounter.count == 1

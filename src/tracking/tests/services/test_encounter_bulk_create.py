@@ -23,6 +23,7 @@ def test_encounter_create(make_person, make_user):
                 end_date=end_date,
                 duration=10,
                 min_distance=10.0,
+                count=1,
             )
         )
 

@@ -140,6 +140,9 @@ class Encounter(models.Model):
     duration = models.PositiveIntegerField()
     min_distance = models.FloatField()
 
+    count = models.PositiveIntegerField(null=False, default=0)
+    city = models.CharField(null=True, blank=True, max_length=250)
+
     objects = EncounterManager()
 
     def __str__(self):

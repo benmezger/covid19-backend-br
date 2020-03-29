@@ -103,7 +103,9 @@ def encounter_create(
     start_date: float,
     end_date: float,
     min_distance: float,
-    duration: int
+    duration: int,
+    count: int,
+    city: str = None
 ) -> Encounter:
 
     person_one = Person.objects.get(beacon_id=person_one_beacon_id)
@@ -116,4 +118,6 @@ def encounter_create(
         end_date=datetime.fromtimestamp(end_date),
         min_distance=min_distance,
         duration=duration,
+        city=city,
+        count=count,
     )
