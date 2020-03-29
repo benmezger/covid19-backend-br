@@ -8,7 +8,7 @@ from tracking.models import Person, PersonEncounters
 
 
 @constance_override_config(INCUBATION_DAYS=14)
-def test_infected_persons(client, db, make_person, make_person_encounters):
+def test_encountered_people(client, db, make_person, make_person_encounters):
     person_one = make_person(beacon_id="q6yuu5d3h6y9dxghjf99tqw9ci3ya8reab5i")
     person_two = make_person(
         beacon_id="5nk2nqnjfs26a183oqeflumfhhswzm616lo1", status="C"
@@ -37,7 +37,7 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
 
     make_person_encounters(
         person_beacon_id=person_one.beacon_id,
-        encountered_persons_beacons_ids=[
+        encountered_people_beacons_ids=[
             person_two.beacon_id,
             person_three.beacon_id,
             person_four.beacon_id,
@@ -45,7 +45,7 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
     )
     make_person_encounters(
         person_beacon_id=person_two.beacon_id,
-        encountered_persons_beacons_ids=[
+        encountered_people_beacons_ids=[
             person_one.beacon_id,
             person_three.beacon_id,
             person_four.beacon_id,
@@ -69,7 +69,7 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
     )
 
     payload = {
-        "persons_beacons_ids": [
+        "people_beacons_ids": [
             person_two.beacon_id,
             person_five.beacon_id,
             person_six.beacon_id,
@@ -77,7 +77,7 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
     }
 
     response = client.post(
-        reverse("tracking:infected-persons"),
+        reverse("tracking:encountered-people"),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"PersonToken {person_one.token}",
@@ -98,7 +98,7 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
 
 
 @constance_override_config(INCUBATION_DAYS=14)
-def test_uninfected_persons(client, db, make_person, make_person_encounters):
+def test_unencountered_people(client, db, make_person, make_person_encounters):
     person_one = make_person(beacon_id="q6yuu5d3h6y9dxghjf99tqw9ci3ya8reab5i")
     person_two = make_person(
         beacon_id="5nk2nqnjfs26a183oqeflumfhhswzm616lo1", status="R"
@@ -127,7 +127,7 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
 
     make_person_encounters(
         person_beacon_id=person_one.beacon_id,
-        encountered_persons_beacons_ids=[
+        encountered_people_beacons_ids=[
             person_two.beacon_id,
             person_three.beacon_id,
             person_four.beacon_id,
@@ -135,7 +135,7 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
     )
     make_person_encounters(
         person_beacon_id=person_two.beacon_id,
-        encountered_persons_beacons_ids=[
+        encountered_people_beacons_ids=[
             person_one.beacon_id,
             person_three.beacon_id,
             person_four.beacon_id,
@@ -152,7 +152,7 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
         make_person_encounters(person_one.beacon_id, old_encounters)
 
     payload = {
-        "persons_beacons_ids": [
+        "people_beacons_ids": [
             person_two.beacon_id,
             person_five.beacon_id,
             person_six.beacon_id,
@@ -167,7 +167,7 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
     )
 
     response = client.post(
-        reverse("tracking:infected-persons"),
+        reverse("tracking:encountered-people"),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"PersonToken {person_one.token}",
@@ -183,7 +183,7 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
     assert response.json() == []
 
 
-def test_infected_persons_unauthenticated(client, db, make_person):
+def test_encountered_people_unauthenticated(client, db, make_person):
     person = make_person(beacon_id="a488-45bf-afb3-9e9b1baabd49146-d50f3", status="D")
     person = make_person(beacon_id="9e9b1baabd49-146d50f3-a488-45bf-afb3", status="D")
     person = make_person(beacon_id="22222222-a488-45bf-9e9b1bafb3-aabd49", status="D")
@@ -192,7 +192,7 @@ def test_infected_persons_unauthenticated(client, db, make_person):
     person = make_person(beacon_id="55555555-a488-45bf-afb3-9e9b1baabd49", status="D")
 
     payload = {
-        "persons_beacons_ids": [
+        "people_beacons_ids": [
             "a488-45bf-afb3-9e9b1baabd49146-d50f3",
             "9e9b1baabd49-146d50f3-a488-45bf-afb3",
             "22222222-a488-45bf-9e9b1bafb3-aabd49",
@@ -203,7 +203,7 @@ def test_infected_persons_unauthenticated(client, db, make_person):
     }
 
     response = client.post(
-        reverse("tracking:infected-persons"),
+        reverse("tracking:encountered-people"),
         data=payload,
         content_type="application/json",
     )

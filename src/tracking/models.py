@@ -80,7 +80,7 @@ class PersonRiskFactor(TimeStampedModel):
         "tracking.Person", on_delete=models.CASCADE, related_name="risk_factors"
     )
     risk_factor = models.ForeignKey(
-        "tracking.RiskFactor", on_delete=models.CASCADE, related_name="persons"
+        "tracking.RiskFactor", on_delete=models.CASCADE, related_name="people"
     )
 
     class Meta:
@@ -124,7 +124,7 @@ class PersonSymptomReport(TimeStampedModel):
         "tracking.Person", on_delete=models.CASCADE, related_name="symptoms_reports"
     )
     symptom = models.ForeignKey(
-        "tracking.Symptom", on_delete=models.CASCADE, related_name="persons"
+        "tracking.Symptom", on_delete=models.CASCADE, related_name="people"
     )
 
     def __str__(self):
@@ -166,7 +166,7 @@ class PersonEncounters(models.Model):
     """
 
     person_beacon_id = models.CharField(max_length=36, db_index=True)
-    encountered_persons_beacons_ids = ArrayField(models.CharField(max_length=36))
+    encountered_people_beacons_ids = ArrayField(models.CharField(max_length=36))
     date = models.DateTimeField(db_index=True, auto_now_add=True)
 
     def __str__(self):

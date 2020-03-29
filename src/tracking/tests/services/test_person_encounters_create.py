@@ -11,7 +11,7 @@ def test_person_encounters_create(make_person):
     ]
 
     _ = person_encounters_create(
-        person_beacon_id=person.beacon_id, encountered_persons_beacons_ids=encounters,
+        person_beacon_id=person.beacon_id, encountered_people_beacons_ids=encounters,
     )
 
     person_encounters = PersonEncounters.objects.first()
@@ -19,4 +19,4 @@ def test_person_encounters_create(make_person):
     assert person_encounters
 
     assert person_encounters.person_beacon_id == person.beacon_id
-    assert person_encounters.encountered_persons_beacons_ids == encounters
+    assert person_encounters.encountered_people_beacons_ids == encounters

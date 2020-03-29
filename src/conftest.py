@@ -121,11 +121,11 @@ def make_encounter(db):
 @pytest.fixture
 def make_person_encounters(db):
     def _make_person_encounters(
-        person_beacon_id, encountered_persons_beacons_ids,
+        person_beacon_id, encountered_people_beacons_ids,
     ):
         return PersonEncounters.objects.create(
             person_beacon_id=person_beacon_id,
-            encountered_persons_beacons_ids=encountered_persons_beacons_ids,
+            encountered_people_beacons_ids=encountered_people_beacons_ids,
         )
 
     yield _make_person_encounters
