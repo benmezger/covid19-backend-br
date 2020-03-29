@@ -23,7 +23,8 @@ class ConditionOperator(BaseEnum):
     GREATER_THAN_OR_EQUAL_TO = (">=", "gte")
     LESS_THAN = ("<", "lt")
     LESS_THAN_OR_EQUAL_TO = ("=<", "lte")
-    IN = ("in", "IN")
+    ALL = ("all", "all")
+    ANY = ("any", "any")
 
     @classmethod
     def choices(cls):

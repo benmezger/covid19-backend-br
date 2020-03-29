@@ -22,7 +22,7 @@
             $value.parent().find('a, br').remove();
 
             if ($element.val() == 'symptoms') {
-                var attributeOperators = ['IN'];
+                var attributeOperators = ['all', 'any'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
 
                 // $.ajax("/api/v1/symptom/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
@@ -33,7 +33,7 @@
             }
 
             else if ($element.val() == 'risk_factors') {
-                var attributeOperators = ['IN'];
+                var attributeOperators = ['all', 'any'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
 
                 // $.ajax("/api/v1/risk-factor/").done(payload => fillPossibleValues($value, payload, $value.attr('default')));
