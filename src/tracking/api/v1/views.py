@@ -3,7 +3,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 from tracking import selectors, services
 from notification.api.v1.serializers import NotificationOutputSerializer
@@ -64,9 +64,7 @@ class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
 
-class PersonViewSet(
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet
-):
+class PersonViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonInputSerializer
     permission_classes = (IsAuthenticated,)
@@ -74,7 +72,7 @@ class PersonViewSet(
 
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
-        "partial_update": (IsAuthenticated(),),
+        "update_status": (IsAuthenticated(), IsAdminUser()),
         "symptoms_report": (IsAuthenticated(),),
         "notification": (IsAuthenticated(),),
     }
@@ -100,7 +98,11 @@ class PersonViewSet(
             status=status.HTTP_201_CREATED,
         )
 
-    def partial_update(self, request, pk=None, *args, **kwargs):
+    @action(("POST",), detail=True)
+    def update_status(self, request, pk=None, *args, **kwargs):
+        """
+        An update on a person user is made by a doctor
+        """
         person = self.get_object()
 
         serializer = self.get_serializer(person, data=request.data, partial=True)
