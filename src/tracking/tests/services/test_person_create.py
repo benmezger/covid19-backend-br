@@ -3,12 +3,15 @@ from tracking.services import person_create
 
 
 def test_person_create(db):
-    person = person_create(age=50, beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+    person = person_create(
+        age=50, beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49", sex="M"
+    )
 
     person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
 
     assert person.age == 50
     assert person.status == "D"
+    assert person.sex == "M"
     assert person.beacon_id == "146d50f3-a488-45bf-afb3-9e9b1baabd49"
 
     assert person.risk_factors.count() == 0
@@ -28,6 +31,7 @@ def test_person_create_with_risk_factors(db, make_risk_factor):
 
     assert person.age == 50
     assert person.status == "D"
+    assert person.sex == None
     assert person.beacon_id == "146d50f3-a488-45bf-afb3-9e9b1baabd49"
 
     assert person.risk_factors.count() == 2
