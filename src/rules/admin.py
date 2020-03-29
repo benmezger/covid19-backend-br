@@ -1,12 +1,7 @@
-import json
-
-from django import forms
 from django.contrib import admin
 
 from rules.forms import RuleConditionCustomForm, RuleCustomForm
 from rules.models import LogicalCondition, Rule, RuleCondition
-from tracking.models import RiskFactor, Symptom
-from tracking.selectors import get_risk_factors_list, get_symptoms_list
 from utils.django.mixins import (
     CustomRuleConditionAddViewMixin,
     CustomRuleConditionChangeViewMixin,
@@ -22,8 +17,8 @@ class LogicalConditionInlineAdmin(admin.TabularInline):
 @admin.register(Rule)
 class RuleAdmin(admin.ModelAdmin):
     form = RuleCustomForm
-    list_display = ("name", "enabled")
-    list_filter = ("name", "enabled")
+    list_display = ("name", "enabled", "any")
+    list_filter = ("name", "enabled", "any")
     search_fields = ("name", "message")
 
 

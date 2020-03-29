@@ -5,16 +5,18 @@ from tracking.models import Person, RiskFactor, Symptom
 
 
 class EncounterInputSerializer(serializers.Serializer):
-    person_one_beacon_id = serializers.CharField()
     person_two_beacon_id = serializers.CharField()
     start_date = serializers.FloatField()
     end_date = serializers.FloatField()
     min_distance = serializers.FloatField()
     duration = serializers.IntegerField()
+    city = serializers.CharField(default=None)
+    count = serializers.IntegerField(required=True)
 
 
 class PersonInputSerializer(serializers.Serializer):
-    age = serializers.IntegerField()
+    age = serializers.IntegerField(required=False)
+    sex = serializers.CharField(required=False)
     beacon_id = serializers.CharField(
         required=True, validators=[UniqueValidator(queryset=Person.objects.all())]
     )
@@ -25,7 +27,12 @@ class PersonInputSerializer(serializers.Serializer):
 class PersonOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
-        fields = ("id", "age", "beacon_id", "status")
+        fields = ("id", "age", "sex", "beacon_id", "status")
+
+
+class PersonCreationOutputSerializer(PersonOutputSerializer):
+    class Meta(PersonOutputSerializer.Meta):
+        fields = PersonOutputSerializer.Meta.fields + ("token",)
 
 
 class RiskFactorSerializer(serializers.ModelSerializer):

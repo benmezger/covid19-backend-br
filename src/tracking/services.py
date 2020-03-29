@@ -32,9 +32,13 @@ def person_risk_factor_bulk_create(
 
 @transaction.atomic
 def person_create(
-    *, age: int, beacon_id: str, risk_factors_ids: List[Union[int, None]] = None
+    *,
+    age: int = None,
+    sex: str = None,
+    beacon_id: str,
+    risk_factors_ids: List[Union[int, None]] = None
 ):
-    person = Person.objects.create(age=age, beacon_id=beacon_id)
+    person = Person.objects.create(age=age, beacon_id=beacon_id, sex=sex)
 
     if risk_factors_ids:
         risk_factors = RiskFactor.objects.filter(id__in=risk_factors_ids)
@@ -87,9 +91,12 @@ def person_symptom_report_bulk_create(
 
 
 @transaction.atomic
-def encounter_bulk_create(encounters_data: List[OrderedDict]) -> None:
+def encounter_bulk_create(
+    person_one_beacon_id: str, encounters_data: List[OrderedDict]
+) -> None:
     Encounter.objects.bulk_create(
-        encounter_create(**encounter_data) for encounter_data in encounters_data
+        encounter_create(person_one_beacon_id=person_one_beacon_id, **encounter_data)
+        for encounter_data in encounters_data
     )
 
 
@@ -102,6 +109,8 @@ def encounter_create(
     end_date: float,
     min_distance: float,
     duration: int,
+    count: int,
+    city: str = None
 ) -> Encounter:
 
     person_one = Person.objects.get(beacon_id=person_one_beacon_id)
@@ -114,6 +123,8 @@ def encounter_create(
         end_date=datetime.fromtimestamp(end_date),
         min_distance=min_distance,
         duration=duration,
+        city=city,
+        count=count,
     )
 
 

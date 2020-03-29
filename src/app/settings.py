@@ -141,6 +141,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
+        "app.authentication.PersonTokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
 }

@@ -9,6 +9,7 @@ class RuleFactory(factory.DjangoModelFactory):
     class Meta:
         model = Rule
 
+    any = True
     name = factory.Faker("catch_phrase")
     message = factory.Faker("paragraph")
     conditions = factory.RelatedFactory(
