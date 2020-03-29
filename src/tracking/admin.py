@@ -55,6 +55,8 @@ class EncounterAdmin(admin.ModelAdmin):
         "end_date",
         "duration",
         "min_distance",
+        "count",
+        "city",
     )
 
     search_fields = ("person_one", "person_two")
