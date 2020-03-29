@@ -11,10 +11,13 @@ class EncounterInputSerializer(serializers.Serializer):
     end_date = serializers.FloatField()
     min_distance = serializers.FloatField()
     duration = serializers.IntegerField()
+    city = serializers.CharField(default=None)
+    count = serializers.IntegerField(required=True)
 
 
 class PersonInputSerializer(serializers.Serializer):
-    age = serializers.IntegerField()
+    age = serializers.IntegerField(required=False)
+    sex = serializers.CharField(required=False)
     beacon_id = serializers.CharField(
         required=True, validators=[UniqueValidator(queryset=Person.objects.all())]
     )
@@ -25,7 +28,7 @@ class PersonInputSerializer(serializers.Serializer):
 class PersonOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
-        fields = ("id", "age", "beacon_id", "status")
+        fields = ("id", "age", "sex", "beacon_id", "status")
 
 
 class RiskFactorSerializer(serializers.ModelSerializer):

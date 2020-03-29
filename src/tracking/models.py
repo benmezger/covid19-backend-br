@@ -20,14 +20,25 @@ class Person(models.Model):
         (NEGATIVATED, _("Negativado")),
     )
 
-    age = models.PositiveIntegerField()
+    MALE = "M"
+    FEMALE = "F"
+    NOT_DECLARED = "N"
+
+    SEX_STATUS_CHOICES = (
+        (MALE, _("Masculino")),
+        (FEMALE, _("Feminino")),
+        (NOT_DECLARED, _("Não declarar")),
+    )
+
+    age = models.PositiveIntegerField(null=True)
+    sex = models.CharField(choices=SEX_STATUS_CHOICES, null=True, max_length=1)
     status = models.CharField(
         choices=PERSON_STATUS_CHOICES, default=UNKNOWN, max_length=1
     )
     beacon_id = models.CharField(unique=True, max_length=36)
 
     def __str__(self):
-        return f"Age: {self.age} - Status: {self.get_status_display()}"
+        return f"Status: {self.get_status_display()}"
 
 
 class PersonStatusChange(TimeStampedModel):
@@ -128,6 +139,9 @@ class Encounter(models.Model):
     end_date = models.DateTimeField()
     duration = models.PositiveIntegerField()
     min_distance = models.FloatField()
+
+    count = models.PositiveIntegerField(null=False, default=0)
+    city = models.CharField(null=True, blank=True, max_length=250)
 
     objects = EncounterManager()
 

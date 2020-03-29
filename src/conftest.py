@@ -37,9 +37,11 @@ def make_user(db):
 @pytest.fixture
 def make_person(db):
     def _make_person(
-        age=70, beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49", status="D"
+        age=70, beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49", status="D", sex=None
     ):
-        return Person.objects.create(age=age, beacon_id=beacon_id, status=status)
+        return Person.objects.create(
+            age=age, beacon_id=beacon_id, status=status, sex=sex
+        )
 
     yield _make_person
 

@@ -11,16 +11,25 @@ def test_rule_get(client, create_rules_from_json_dump):
         {
             "name": "Rule 1",
             "message": "Hello rule 1",
+            "any": True,
+            "id": 1,
             "logical_conditions": [
-                {"attribute": "encounter_distance", "operator": "lt", "value": "12"},
-                {"attribute": "age", "operator": "gt", "value": "12"},
+                {
+                    "id": 3,
+                    "attribute": "encounter_distance",
+                    "operator": "lt",
+                    "value": "12",
+                },
+                {"id": 1, "attribute": "age", "operator": "gt", "value": "12"},
             ],
         },
         {
             "name": "Rule 2",
             "message": "Hello rule 2",
+            "any": True,
+            "id": 2,
             "logical_conditions": [
-                {"attribute": "age", "operator": "gt", "value": "12"}
+                {"id": 2, "attribute": "age", "operator": "gt", "value": "12"}
             ],
         },
     ]
