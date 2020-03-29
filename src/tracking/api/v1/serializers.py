@@ -30,6 +30,10 @@ class PersonOutputSerializer(serializers.ModelSerializer):
         fields = ("id", "age", "sex", "beacon_id", "status")
 
 
+class PersonStatusSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
 class PersonCreationOutputSerializer(PersonOutputSerializer):
     class Meta(PersonOutputSerializer.Meta):
         fields = PersonOutputSerializer.Meta.fields + ("token",)
