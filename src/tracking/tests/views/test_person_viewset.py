@@ -19,13 +19,19 @@ def test_person_create_empty_values(client, db, make_risk_factor):
 
     person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
 
-    assert response.json() == {
-        "id": person.id,
-        "age": None,
-        "sex": None,
-        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
-        "status": "D",
-    }
+    data = response.json()
+
+    assert data["token"]
+    assert (
+        data.items()
+        >= {
+            "id": person.id,
+            "age": None,
+            "sex": None,
+            "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+            "status": "D",
+        }.items()
+    )
 
     assert person.risk_factors.count() == 0
 
@@ -45,16 +51,23 @@ def test_person_create(client, db, make_risk_factor):
         reverse("tracking:person-list"), data=payload, content_type="application/json"
     )
 
+    assert response.status_code == 201
+
     person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
 
-    assert response.status_code == 201
-    assert response.json() == {
-        "id": person.id,
-        "age": 50,
-        "sex": "M",
-        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
-        "status": "D",
-    }
+    data = response.json()
+
+    assert data["token"]
+    assert (
+        data.items()
+        >= {
+            "id": person.id,
+            "age": 50,
+            "sex": "M",
+            "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+            "status": "D",
+        }.items()
+    )
 
     assert person.risk_factors.count() == 2
 
@@ -96,16 +109,23 @@ def test_person_create_without_risk_factors(client, db):
         reverse("tracking:person-list"), data=payload, content_type="application/json"
     )
 
+    assert response.status_code == 201
+
     person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
 
-    assert response.status_code == 201
-    assert response.json() == {
-        "id": person.id,
-        "age": 50,
-        "sex": "M",
-        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
-        "status": "D",
-    }
+    data = response.json()
+
+    assert data["token"]
+    assert (
+        data.items()
+        >= {
+            "id": person.id,
+            "age": 50,
+            "sex": "M",
+            "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+            "status": "D",
+        }.items()
+    )
 
     assert person.risk_factors.count() == 0
 
@@ -116,9 +136,28 @@ def test_person_update_unauthenticated(client, db, make_person):
     payload = {"status": "C"}
 
     response = client.post(
-        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
+        reverse(
+            "tracking:person-update-status", kwargs={"beacon_id": person.beacon_id}
+        ),
         data=payload,
         content_type="application/json",
+    )
+
+    assert response.status_code == 401
+
+
+def test_person_update_authenticated_person(client, db, make_person):
+    person = make_person()
+
+    payload = {"status": "C"}
+
+    response = client.post(
+        reverse(
+            "tracking:person-update-status", kwargs={"beacon_id": person.beacon_id}
+        ),
+        data=payload,
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Token {person.token}",
     )
 
     assert response.status_code == 401
@@ -130,8 +169,10 @@ def test_person_update(client, db, make_person, make_user):
 
     payload = {"status": "C"}
 
-    response = client.patch(
-        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
+    response = client.post(
+        reverse(
+            "tracking:person-update-status", kwargs={"beacon_id": person.beacon_id}
+        ),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -162,8 +203,8 @@ def test_person_update_unexisting_user(client, db, make_person, make_user):
 
     payload = {"status": "C"}
 
-    response = client.patch(
-        reverse("tracking:person-detail", kwargs={"beacon_id": "wrong_id"}),
+    response = client.post(
+        reverse("tracking:person-update-status", kwargs={"beacon_id": "wrong_id"}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -172,23 +213,18 @@ def test_person_update_unexisting_user(client, db, make_person, make_user):
     assert response.status_code == 404
 
 
-def test_person_create_person_symptons(
-    client, db, make_person, make_symptom, make_user
-):
+def test_person_create_person_symptons(client, db, make_person, make_symptom):
     person = make_person(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
     symptom_1 = make_symptom("Diarreia")
     symptom_2 = make_symptom("Dor de cabeça")
-    user = make_user()
 
     payload = {"symptoms_ids": [symptom_1.id, symptom_2.id]}
 
     response = client.post(
-        reverse(
-            "tracking:person-symptoms-report", kwargs={"beacon_id": person.beacon_id}
-        ),
+        reverse("tracking:person-symptoms-report"),
         data=payload,
         content_type="application/json",
-        HTTP_AUTHORIZATION=f"Token {user.token}",
+        HTTP_AUTHORIZATION=f"PersonToken {person.token}",
     )
 
     assert response.status_code == 201
@@ -201,8 +237,9 @@ def test_person_get_notifications(client, db, make_person, make_notification):
     notification_two = make_notification(person=person)
 
     response = client.get(
-        reverse("tracking:person-notification", kwargs={"beacon_id": person.beacon_id}),
+        reverse("tracking:person-notification"),
         content_type="application/json",
+        HTTP_AUTHORIZATION=f"PersonToken {person.token}",
     )
 
     assert response.status_code == 200

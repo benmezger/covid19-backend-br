@@ -3,7 +3,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 from tracking import selectors, services
 from notification.api.v1.serializers import NotificationOutputSerializer
@@ -13,6 +13,7 @@ from tracking.api.v1.serializers import (
     InfectedPersonsOutputSerializer,
     PersonInputSerializer,
     PersonOutputSerializer,
+    PersonCreationOutputSerializer,
     PersonSymptomnsReportInputSerializer,
     RiskFactorSerializer,
     SymptomSerializer,
@@ -29,7 +30,7 @@ from tracking.models import Encounter, Person, RiskFactor, Symptom
     }
 )
 @api_view(("POST",))
-@permission_classes((AllowAny,))
+@permission_classes((IsAuthenticated,))
 def infected_persons(request):
     serializer = InfectedPersonsInputSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -47,21 +48,23 @@ def infected_persons(request):
 class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterInputSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     @swagger_auto_schema(request_body=EncounterInputSerializer(many=True))
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
 
-        services.encounter_bulk_create(encounters_data=serializer.validated_data)
+        person = request.user
+        services.encounter_bulk_create(
+            person_one_beacon_id=person.beacon_id,
+            encounters_data=serializer.validated_data,
+        )
 
         return Response(status=status.HTTP_201_CREATED)
 
 
-class PersonViewSet(
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet
-):
+class PersonViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonInputSerializer
     permission_classes = (IsAuthenticated,)
@@ -69,9 +72,9 @@ class PersonViewSet(
 
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
-        "partial_update": (IsAuthenticated(),),
-        "symptoms_report": (AllowAny(),),
-        "notification": (AllowAny(),),
+        "update_status": (IsAuthenticated(), IsAdminUser()),
+        "symptoms_report": (IsAuthenticated(),),
+        "notification": (IsAuthenticated(),),
     }
 
     def get_serializer_class(self):
@@ -83,6 +86,7 @@ class PersonViewSet(
     def get_permissions(self):
         return self._PERMISSION_CLASSES.get(self.action, super().get_permissions())
 
+    @swagger_auto_schema(responses={200: PersonCreationOutputSerializer})
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -90,10 +94,15 @@ class PersonViewSet(
         person = services.person_create(**serializer.validated_data)
 
         return Response(
-            PersonOutputSerializer(instance=person).data, status=status.HTTP_201_CREATED
+            PersonCreationOutputSerializer(instance=person).data,
+            status=status.HTTP_201_CREATED,
         )
 
-    def partial_update(self, request, pk=None, *args, **kwargs):
+    @action(("POST",), detail=True)
+    def update_status(self, request, pk=None, *args, **kwargs):
+        """
+        An update on a person user is made by a doctor
+        """
         person = self.get_object()
 
         serializer = self.get_serializer(person, data=request.data, partial=True)
@@ -109,13 +118,12 @@ class PersonViewSet(
             PersonOutputSerializer(instance=person).data, status=status.HTTP_200_OK
         )
 
-    @action(("POST",), detail=True)
+    @action(("POST",), detail=False)
     def symptoms_report(self, request, *args, **kwargs):
-        person = self.get_object()
-
         serializer = PersonSymptomnsReportInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        person = request.user
         services.person_symptom_report_bulk_create(
             person=person, symptoms_ids=serializer.validated_data["symptoms_ids"]
         )
@@ -123,9 +131,9 @@ class PersonViewSet(
         return Response(status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(responses={200: NotificationOutputSerializer})
-    @action(("GET",), detail=True)
+    @action(("GET",), detail=False)
     def notification(self, request, *args, **kwargs):
-        person = self.get_object()
+        person = request.user
         notifications = person.notifications.all()
 
         return Response(NotificationOutputSerializer(notifications, many=True).data)

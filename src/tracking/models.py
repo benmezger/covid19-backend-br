@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django_extensions.db.models import TimeStampedModel
 
+from authentication.models import PersonToken
 from .managers import EncounterManager
 
 
@@ -39,6 +40,15 @@ class Person(models.Model):
 
     def __str__(self):
         return f"Status: {self.get_status_display()}"
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def token(self):
+        token, _ = PersonToken.objects.get_or_create(person=self)
+        return token.key
 
 
 class PersonStatusChange(TimeStampedModel):

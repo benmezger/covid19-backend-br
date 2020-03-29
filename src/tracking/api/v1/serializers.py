@@ -5,7 +5,6 @@ from tracking.models import Person, RiskFactor, Symptom
 
 
 class EncounterInputSerializer(serializers.Serializer):
-    person_one_beacon_id = serializers.CharField()
     person_two_beacon_id = serializers.CharField()
     start_date = serializers.FloatField()
     end_date = serializers.FloatField()
@@ -29,6 +28,11 @@ class PersonOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ("id", "age", "sex", "beacon_id", "status")
+
+
+class PersonCreationOutputSerializer(PersonOutputSerializer):
+    class Meta(PersonOutputSerializer.Meta):
+        fields = PersonOutputSerializer.Meta.fields + ("token",)
 
 
 class RiskFactorSerializer(serializers.ModelSerializer):
