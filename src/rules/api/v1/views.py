@@ -4,7 +4,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rules.api.v1.serializers import RuleConditionSerializer
 from rules.models import RuleCondition
 from utils.drf.utils import inline_serializer
 
@@ -13,10 +12,13 @@ class RuleViewSet(APIView):
     permission_classes = (IsAuthenticated,)
 
     class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField(required=True)
         name = serializers.CharField(required=True, source="rule.name")
         message = serializers.CharField(required=True, source="rule.message")
+        any = serializers.BooleanField(required=True, source="rule.any")
         logical_conditions = inline_serializer(
             fields={
+                "id": serializers.IntegerField(required=True),
                 "attribute": serializers.CharField(required=True),
                 "operator": serializers.CharField(required=True),
                 "value": serializers.CharField(required=True),

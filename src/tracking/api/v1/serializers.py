@@ -10,6 +10,8 @@ class EncounterInputSerializer(serializers.Serializer):
     end_date = serializers.FloatField()
     min_distance = serializers.FloatField()
     duration = serializers.IntegerField()
+    city = serializers.CharField(default=None)
+    count = serializers.IntegerField(required=True)
 
 
 class PersonInputSerializer(serializers.Serializer):

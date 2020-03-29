@@ -13,6 +13,7 @@ class Rule(TimeStampedModel):
         max_length=255, null=False, blank=False, verbose_name="Message"
     )
     enabled = models.BooleanField(null=False, default=True, blank=False)
+    any = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return f"{self.name}"

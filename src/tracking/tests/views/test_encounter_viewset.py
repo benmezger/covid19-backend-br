@@ -17,6 +17,7 @@ def test_encounter_create(client, db, make_person):
             "end_date": 1584905632.263027,
             "duration": 20,
             "min_distance": 40.0,
+            "count": 1,
         },
         {
             "person_two_beacon_id": "45bf-afb3-9e9b1baabd49-146d50f3-a488",
@@ -24,6 +25,7 @@ def test_encounter_create(client, db, make_person):
             "end_date": 1584905632.263027,
             "duration": 10,
             "min_distance": 10.0,
+            "count": 1,
         },
     ]
 
