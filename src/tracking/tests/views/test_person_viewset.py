@@ -5,12 +5,38 @@ from django.urls import reverse
 from tracking.models import Person, PersonStatusChange, PersonSymptomReport
 
 
+def test_person_create_empty_values(client, db, make_risk_factor):
+    payload = {
+        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+        "risk_factors_ids": [],
+    }
+
+    response = client.post(
+        reverse("tracking:person-list"), data=payload, content_type="application/json"
+    )
+
+    assert response.status_code == 201
+
+    person = Person.objects.get(beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49")
+
+    assert response.json() == {
+        "id": person.id,
+        "age": None,
+        "sex": None,
+        "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
+        "status": "D",
+    }
+
+    assert person.risk_factors.count() == 0
+
+
 def test_person_create(client, db, make_risk_factor):
     risk_factor_1 = make_risk_factor(name="Doença cardíaca")
     risk_factor_2 = make_risk_factor(name="Diabetes")
 
     payload = {
         "age": 50,
+        "sex": "M",
         "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
         "risk_factors_ids": [risk_factor_1.id, risk_factor_2.id],
     }
@@ -25,6 +51,7 @@ def test_person_create(client, db, make_risk_factor):
     assert response.json() == {
         "id": person.id,
         "age": 50,
+        "sex": "M",
         "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
         "status": "D",
     }
@@ -40,6 +67,7 @@ def test_person_create_existing_beacon_id(client, db, make_person, make_risk_fac
 
     payload = {
         "age": 50,
+        "sex": "U",
         "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
         "risk_factors_ids": [risk_factor_1.id, risk_factor_2.id],
     }
@@ -59,6 +87,7 @@ def test_person_create_existing_beacon_id(client, db, make_person, make_risk_fac
 def test_person_create_without_risk_factors(client, db):
     payload = {
         "age": 50,
+        "sex": "M",
         "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
         "risk_factors_ids": [],
     }
@@ -73,6 +102,7 @@ def test_person_create_without_risk_factors(client, db):
     assert response.json() == {
         "id": person.id,
         "age": 50,
+        "sex": "M",
         "beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
         "status": "D",
     }
@@ -86,7 +116,7 @@ def test_person_update_unauthenticated(client, db, make_person):
     payload = {"status": "C"}
 
     response = client.post(
-        reverse("tracking:person-detail", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
         data=payload,
         content_type="application/json",
     )
@@ -101,7 +131,7 @@ def test_person_update(client, db, make_person, make_user):
     payload = {"status": "C"}
 
     response = client.patch(
-        reverse("tracking:person-detail", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -113,6 +143,7 @@ def test_person_update(client, db, make_person, make_user):
     assert response.json() == {
         "id": person.id,
         "age": person.age,
+        "sex": None,
         "beacon_id": person.beacon_id,
         "status": "C",
     }
@@ -132,7 +163,7 @@ def test_person_update_unexisting_user(client, db, make_person, make_user):
     payload = {"status": "C"}
 
     response = client.patch(
-        reverse("tracking:person-detail", kwargs={"pk": "wrong_id"}),
+        reverse("tracking:person-detail", kwargs={"beacon_id": "wrong_id"}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -152,7 +183,9 @@ def test_person_create_person_symptons(
     payload = {"symptoms_ids": [symptom_1.id, symptom_2.id]}
 
     response = client.post(
-        reverse("tracking:person-symptoms-report", kwargs={"pk": person.beacon_id}),
+        reverse(
+            "tracking:person-symptoms-report", kwargs={"beacon_id": person.beacon_id}
+        ),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -168,7 +201,7 @@ def test_person_get_notifications(client, db, make_person, make_notification):
     notification_two = make_notification(person=person)
 
     response = client.get(
-        reverse("tracking:person-notification", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-notification", kwargs={"beacon_id": person.beacon_id}),
         content_type="application/json",
     )
 

@@ -30,9 +30,13 @@ def person_risk_factor_bulk_create(
 
 @transaction.atomic
 def person_create(
-    *, age: int, beacon_id: str, risk_factors_ids: List[Union[int, None]] = None
+    *,
+    age: int = None,
+    sex: str = None,
+    beacon_id: str,
+    risk_factors_ids: List[Union[int, None]] = None
 ):
-    person = Person.objects.create(age=age, beacon_id=beacon_id)
+    person = Person.objects.create(age=age, beacon_id=beacon_id, sex=sex)
 
     if risk_factors_ids:
         risk_factors = RiskFactor.objects.filter(id__in=risk_factors_ids)
