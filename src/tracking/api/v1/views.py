@@ -34,8 +34,12 @@ def infected_persons(request):
     serializer = InfectedPersonsInputSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    queryset = selectors.get_possible_infected_persons_in_ids(
+    services.person_encounters_create(
         persons_beacons_ids=serializer.validated_data["persons_beacons_ids"]
+    )
+
+    queryset = selectors.get_persons_encountered_with_disease_statuses(
+        person_beacon_id=request.user.beacon_id
     )
 
     return Response(
