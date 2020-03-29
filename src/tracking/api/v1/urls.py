@@ -10,5 +10,9 @@ router.register("symptom", views.SymptomViewSet, basename="symptom")
 router.register("encounter", views.EncounterViewSet, basename="encounter")
 
 urlpatterns = [
-    path(route="infected-persons", view=views.infected_persons, name="infected-persons")
+    path(
+        route="encountered-people",
+        view=views.encountered_people,
+        name="encountered-people",
+    )
 ] + router.urls

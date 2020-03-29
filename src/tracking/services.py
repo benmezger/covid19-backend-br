@@ -1,13 +1,15 @@
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Union
 
+from constance import config
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from .models import (
     Encounter,
     Person,
+    PersonEncounters,
     PersonRiskFactor,
     PersonStatusChange,
     PersonSymptomReport,
@@ -34,7 +36,7 @@ def person_create(
     age: int = None,
     sex: str = None,
     beacon_id: str,
-    risk_factors_ids: List[Union[int, None]] = None
+    risk_factors_ids: List[Union[int, None]] = None,
 ):
     person = Person.objects.create(age=age, beacon_id=beacon_id, sex=sex)
 
@@ -108,7 +110,7 @@ def encounter_create(
     min_distance: float,
     duration: int,
     count: int,
-    city: str = None
+    city: str = None,
 ) -> Encounter:
 
     person_one = Person.objects.get(beacon_id=person_one_beacon_id)
@@ -124,3 +126,23 @@ def encounter_create(
         city=city,
         count=count,
     )
+
+
+@transaction.atomic
+def person_encounters_create(
+    *, person_beacon_id: str, encountered_people_beacons_ids: List[str],
+) -> PersonEncounters:
+    person_encounters_delete_older_encounters(person_beacon_id=person_beacon_id)
+
+    return PersonEncounters.objects.create(
+        person_beacon_id=person_beacon_id,
+        encountered_people_beacons_ids=encountered_people_beacons_ids,
+    )
+
+
+@transaction.atomic
+def person_encounters_delete_older_encounters(*, person_beacon_id: str) -> None:
+    PersonEncounters.objects.filter(
+        person_beacon_id=person_beacon_id,
+        date__lt=datetime.now() - timedelta(days=config.INCUBATION_DAYS),
+    ).delete()
