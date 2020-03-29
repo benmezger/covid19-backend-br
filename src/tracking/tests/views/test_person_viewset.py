@@ -244,3 +244,21 @@ def test_person_get_notifications(client, db, make_person, make_notification):
 
     assert response.status_code == 200
     assert len(response.json()) == 2
+
+
+def test_person_get(client, db, make_person):
+    person = make_person(
+        beacon_id="146d50f3-a488-45bf-afb3-9e9b1baabd49", age=70, sex="M", status="R"
+    )
+
+    response = client.get(
+        reverse("tracking:person-status"),
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"PersonToken {person.token}",
+    )
+
+    assert response.status_code == 200
+
+    assert response.json() == {
+        "status": "R",
+    }
