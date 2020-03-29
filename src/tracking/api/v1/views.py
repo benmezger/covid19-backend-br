@@ -9,6 +9,7 @@ from tracking import selectors, services
 from notification.api.v1.serializers import NotificationOutputSerializer
 from tracking.api.v1.serializers import (
     EncounterInputSerializer,
+    EncounterCountSerializer,
     EncounteredPeopleInputSerializer,
     EncounteredPeopleOutputSerializer,
     PersonInputSerializer,
@@ -68,6 +69,14 @@ class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         )
 
         return Response(status=status.HTTP_201_CREATED)
+
+    @swagger_auto_schema(responses={200: EncounterCountSerializer})
+    @action(("GET",), detail=False)
+    def count(self, request):
+        person = request.user
+        queryset = self.get_queryset().filter(person_one=person)
+
+        return Response(EncounterCountSerializer(instance=queryset).data)
 
 
 class PersonViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):

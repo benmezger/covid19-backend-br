@@ -99,12 +99,7 @@ def list_of_symptoms(db):
 @pytest.fixture
 def make_encounter(db):
     def _make_encounter(
-        person_one=person_one,
-        person_two=person_two,
-        start_date=start_date,
-        end_date=end_date,
-        min_distance=min_distance,
-        duration=duration,
+        person_one, person_two, start_date, end_date, min_distance, duration, count,
     ):
         return Encounter.objects.create(
             person_one=person_one,
@@ -113,6 +108,7 @@ def make_encounter(db):
             end_date=end_date,
             min_distance=min_distance,
             duration=duration,
+            count=count,
         )
 
     yield _make_encounter
