@@ -12,8 +12,10 @@ class RuleViewSet(APIView):
         name = serializers.CharField(required=True, source="rule.name")
         message = serializers.CharField(required=True, source="rule.message")
         any = serializers.BooleanField(required=True, source="rule.any")
+        id = serializers.IntegerField(required=True)
         logical_conditions = inline_serializer(
             fields={
+                "id": serializers.IntegerField(required=True),
                 "attribute": serializers.CharField(required=True),
                 "operator": serializers.CharField(required=True),
                 "value": serializers.CharField(required=True),
