@@ -48,14 +48,18 @@ def infected_persons(request):
 class EncounterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Encounter.objects.all()
     serializer_class = EncounterInputSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     @swagger_auto_schema(request_body=EncounterInputSerializer(many=True))
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
 
-        services.encounter_bulk_create(encounters_data=serializer.validated_data)
+        person = request.user
+        services.encounter_bulk_create(
+            person_one_beacon_id=person.beacon_id,
+            encounters_data=serializer.validated_data,
+        )
 
         return Response(status=status.HTTP_201_CREATED)
 

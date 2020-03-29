@@ -12,7 +12,6 @@ def test_encounter_create(client, db, make_person):
 
     payload = [
         {
-            "person_one_beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
             "person_two_beacon_id": "a488-45bf-afb3-9e9b1baabd49-146d50f3",
             "start_date": 1584905619.222456,
             "end_date": 1584905632.263027,
@@ -20,7 +19,6 @@ def test_encounter_create(client, db, make_person):
             "min_distance": 40.0,
         },
         {
-            "person_one_beacon_id": "146d50f3-a488-45bf-afb3-9e9b1baabd49",
             "person_two_beacon_id": "45bf-afb3-9e9b1baabd49-146d50f3-a488",
             "start_date": 1584905619.222456,
             "end_date": 1584905632.263027,
@@ -33,8 +31,10 @@ def test_encounter_create(client, db, make_person):
         reverse("tracking:encounter-list"),
         data=payload,
         content_type="application/json",
+        HTTP_AUTHORIZATION=f"PersonToken {person_one.token}",
     )
 
     assert Encounter.objects.count() == 2
+    assert Encounter.objects.filter(person_one=person_one).count() == 2
 
     assert response.status_code == 201

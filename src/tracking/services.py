@@ -89,9 +89,12 @@ def person_symptom_report_bulk_create(
 
 
 @transaction.atomic
-def encounter_bulk_create(encounters_data: List[OrderedDict]) -> None:
+def encounter_bulk_create(
+    person_one_beacon_id: str, encounters_data: List[OrderedDict]
+) -> None:
     Encounter.objects.bulk_create(
-        encounter_create(**encounter_data) for encounter_data in encounters_data
+        encounter_create(person_one_beacon_id=person_one_beacon_id, **encounter_data)
+        for encounter_data in encounters_data
     )
 
 
