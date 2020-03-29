@@ -7,7 +7,14 @@ from faker import Faker
 
 from notification.models import Notification
 from rules.models import Rule
-from tracking.models import Encounter, Person, PersonStatusChange, RiskFactor, Symptom
+from tracking.models import (
+    Encounter,
+    Person,
+    PersonEncounters,
+    PersonStatusChange,
+    RiskFactor,
+    Symptom,
+)
 
 fake = Faker()
 
@@ -89,6 +96,7 @@ def list_of_symptoms(db):
     yield _list_of_symptoms
 
 
+@pytest.fixture
 def make_encounter(db):
     def _make_encounter(
         person_one=person_one,
@@ -108,6 +116,19 @@ def make_encounter(db):
         )
 
     yield _make_encounter
+
+
+@pytest.fixture
+def make_person_encounters(db):
+    def _make_person_encounters(
+        person_beacon_id, encountered_people_beacons_ids,
+    ):
+        return PersonEncounters.objects.create(
+            person_beacon_id=person_beacon_id,
+            encountered_people_beacons_ids=encountered_people_beacons_ids,
+        )
+
+    yield _make_person_encounters
 
 
 @pytest.fixture

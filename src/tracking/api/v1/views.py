@@ -9,8 +9,8 @@ from tracking import selectors, services
 from notification.api.v1.serializers import NotificationOutputSerializer
 from tracking.api.v1.serializers import (
     EncounterInputSerializer,
-    InfectedPersonsInputSerializer,
-    InfectedPersonsOutputSerializer,
+    EncounteredPeopleInputSerializer,
+    EncounteredPeopleOutputSerializer,
     PersonInputSerializer,
     PersonOutputSerializer,
     PersonCreationOutputSerializer,
@@ -23,24 +23,30 @@ from tracking.models import Encounter, Person, RiskFactor, Symptom
 
 @swagger_auto_schema(
     **{
-        "operation_summary": "infected persons",
+        "operation_summary": "encountered people",
         "method": "POST",
-        "request_body": InfectedPersonsInputSerializer,
-        "responses": {200: InfectedPersonsOutputSerializer(many=True)},
+        "request_body": EncounteredPeopleInputSerializer,
+        "responses": {200: EncounteredPeopleOutputSerializer(many=True)},
     }
 )
 @api_view(("POST",))
 @permission_classes((IsAuthenticated,))
-def infected_persons(request):
-    serializer = InfectedPersonsInputSerializer(data=request.data)
+def encountered_people(request):
+    serializer = EncounteredPeopleInputSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    queryset = selectors.get_possible_infected_persons_in_ids(
-        persons_beacons_ids=serializer.validated_data["persons_beacons_ids"]
+    person = request.user
+    services.person_encounters_create(
+        person_beacon_id=person.beacon_id,
+        encountered_people_beacons_ids=serializer.validated_data["people_beacons_ids"],
+    )
+
+    queryset = selectors.get_people_encountered_with_disease_statuses(
+        person_beacon_id=request.user.beacon_id
     )
 
     return Response(
-        InfectedPersonsOutputSerializer(instance=queryset, many=True).data,
+        EncounteredPeopleOutputSerializer(instance=queryset, many=True).data,
         status.HTTP_200_OK,
     )
 
@@ -130,7 +136,7 @@ class PersonViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         return Response(status=status.HTTP_201_CREATED)
 
-    @swagger_auto_schema(responses={200: NotificationOutputSerializer})
+    @swagger_auto_schema(responses={200: NotificationOutputSerializer(many=True)})
     @action(("GET",), detail=False)
     def notification(self, request, *args, **kwargs):
         person = request.user
