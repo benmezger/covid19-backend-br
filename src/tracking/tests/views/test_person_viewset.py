@@ -136,9 +136,28 @@ def test_person_update_unauthenticated(client, db, make_person):
     payload = {"status": "C"}
 
     response = client.post(
-        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
+        reverse(
+            "tracking:person-update-status", kwargs={"beacon_id": person.beacon_id}
+        ),
         data=payload,
         content_type="application/json",
+    )
+
+    assert response.status_code == 401
+
+
+def test_person_update_authenticated_person(client, db, make_person):
+    person = make_person()
+
+    payload = {"status": "C"}
+
+    response = client.post(
+        reverse(
+            "tracking:person-update-status", kwargs={"beacon_id": person.beacon_id}
+        ),
+        data=payload,
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Token {person.token}",
     )
 
     assert response.status_code == 401
@@ -150,8 +169,10 @@ def test_person_update(client, db, make_person, make_user):
 
     payload = {"status": "C"}
 
-    response = client.patch(
-        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
+    response = client.post(
+        reverse(
+            "tracking:person-update-status", kwargs={"beacon_id": person.beacon_id}
+        ),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -182,8 +203,8 @@ def test_person_update_unexisting_user(client, db, make_person, make_user):
 
     payload = {"status": "C"}
 
-    response = client.patch(
-        reverse("tracking:person-detail", kwargs={"beacon_id": "wrong_id"}),
+    response = client.post(
+        reverse("tracking:person-update-status", kwargs={"beacon_id": "wrong_id"}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
