@@ -65,6 +65,7 @@ class PersonViewSet(
     queryset = Person.objects.all()
     serializer_class = PersonInputSerializer
     permission_classes = (IsAuthenticated,)
+    lookup_field = "beacon_id"
 
     _PERMISSION_CLASSES = {
         "create": (AllowAny(),),
@@ -72,12 +73,6 @@ class PersonViewSet(
         "symptoms_report": (AllowAny(),),
         "notification": (AllowAny(),),
     }
-
-    def get_object_or_404(self, pk):
-        try:
-            return Person.objects.get(beacon_id=pk)
-        except Person.DoesNotExist:
-            raise Http404
 
     def get_serializer_class(self):
         serializer_map = {
@@ -99,7 +94,7 @@ class PersonViewSet(
         )
 
     def partial_update(self, request, pk=None, *args, **kwargs):
-        person = self.get_object_or_404(pk=pk)
+        person = self.get_object()
 
         serializer = self.get_serializer(person, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -115,8 +110,8 @@ class PersonViewSet(
         )
 
     @action(("POST",), detail=True)
-    def symptoms_report(self, request, pk):
-        person = self.get_object_or_404(pk=pk)
+    def symptoms_report(self, request, *args, **kwargs):
+        person = self.get_object()
 
         serializer = PersonSymptomnsReportInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -129,8 +124,8 @@ class PersonViewSet(
 
     @swagger_auto_schema(responses={200: NotificationOutputSerializer})
     @action(("GET",), detail=True)
-    def notification(self, request, pk):
-        person = self.get_object_or_404(pk=pk)
+    def notification(self, request, *args, **kwargs):
+        person = self.get_object()
         notifications = person.notifications.all()
 
         return Response(NotificationOutputSerializer(notifications, many=True).data)

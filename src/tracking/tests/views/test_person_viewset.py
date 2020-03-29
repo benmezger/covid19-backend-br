@@ -86,7 +86,7 @@ def test_person_update_unauthenticated(client, db, make_person):
     payload = {"status": "C"}
 
     response = client.post(
-        reverse("tracking:person-detail", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
         data=payload,
         content_type="application/json",
     )
@@ -101,7 +101,7 @@ def test_person_update(client, db, make_person, make_user):
     payload = {"status": "C"}
 
     response = client.patch(
-        reverse("tracking:person-detail", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-detail", kwargs={"beacon_id": person.beacon_id}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -132,7 +132,7 @@ def test_person_update_unexisting_user(client, db, make_person, make_user):
     payload = {"status": "C"}
 
     response = client.patch(
-        reverse("tracking:person-detail", kwargs={"pk": "wrong_id"}),
+        reverse("tracking:person-detail", kwargs={"beacon_id": "wrong_id"}),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -152,7 +152,9 @@ def test_person_create_person_symptons(
     payload = {"symptoms_ids": [symptom_1.id, symptom_2.id]}
 
     response = client.post(
-        reverse("tracking:person-symptoms-report", kwargs={"pk": person.beacon_id}),
+        reverse(
+            "tracking:person-symptoms-report", kwargs={"beacon_id": person.beacon_id}
+        ),
         data=payload,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Token {user.token}",
@@ -168,7 +170,7 @@ def test_person_get_notifications(client, db, make_person, make_notification):
     notification_two = make_notification(person=person)
 
     response = client.get(
-        reverse("tracking:person-notification", kwargs={"pk": person.beacon_id}),
+        reverse("tracking:person-notification", kwargs={"beacon_id": person.beacon_id}),
         content_type="application/json",
     )
 
