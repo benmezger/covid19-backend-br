@@ -43,12 +43,12 @@
                 fillPossibleValues($value, {{ risk_factors|safe }}, $value.attr('default'));
             }
             else if ($element.val() == 'age') {
-                var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
+                var attributeOperators = ['eq', 'gt', 'gte', 'lt', 'lte'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
                 $value.val($value.attr('default'));
             }
             else if ($element.val() == 'encounter_distance') {
-                var attributeOperators = ['gt', 'gte', 'lt', 'lte'];
+                var attributeOperators = ['eq', 'gt', 'gte', 'lt', 'lte'];
                 fillOperatorOptions($operator, attributeOperators, $operator.attr('default'));
                 $value.val($value.attr('default'));
             }

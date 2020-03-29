@@ -25,6 +25,7 @@ class ConditionOperator(BaseEnum):
     LESS_THAN_OR_EQUAL_TO = ("=<", "lte")
     ALL = ("all", "all")
     ANY = ("any", "any")
+    EQUAL = ("=", "eq")
 
     @classmethod
     def choices(cls):
