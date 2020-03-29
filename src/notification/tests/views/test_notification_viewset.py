@@ -19,7 +19,7 @@ def test_notification_create(client, db, make_person, make_rule):
         reverse("notification:notification-list"),
         data=payload,
         content_type="application/json",
-        HTTP_AUTHORIZATION=f"PersonToken {person.token}"
+        HTTP_AUTHORIZATION=f"PersonToken {person.token}",
     )
 
     assert Notification.objects.filter(person=person).count() == 1
@@ -30,12 +30,15 @@ def test_notification_create(client, db, make_person, make_rule):
     assert data["created"]
     assert data["id"]
 
-    assert data.items() >= {
-        "title": rule.name,
-        "message": rule.message,
-        "delivered": True,
-        "read": False,
-    }.items()
+    assert (
+        data.items()
+        >= {
+            "title": rule.name,
+            "message": rule.message,
+            "delivered": True,
+            "read": False,
+        }.items()
+    )
 
 
 def test_notification_create_unauthenticated(client, db, make_person, make_rule):
@@ -67,7 +70,7 @@ def test_notification_update(client, db, make_notification):
         reverse("notification:notification-detail", kwargs={"pk": notification.pk}),
         data=payload,
         content_type="application/json",
-        HTTP_AUTHORIZATION=f"PersonToken {notification.person.token}"
+        HTTP_AUTHORIZATION=f"PersonToken {notification.person.token}",
     )
 
     notification = Notification.objects.get(pk=notification.pk)
