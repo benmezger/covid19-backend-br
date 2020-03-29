@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext as _
 from django_extensions.db.models import TimeStampedModel
 
@@ -133,3 +134,16 @@ class Encounter(models.Model):
 
     def __str__(self):
         return f"{self.person_one} - {self.person_two}"
+
+
+class PersonEncounters(models.Model):
+    """
+    Redudant date but mainly used to speed up the query
+    """
+
+    person_beacon_id = models.CharField(max_length=36, db_index=True)
+    encountered_persons_beacons_ids = ArrayField(models.CharField(max_length=36))
+    date = models.DateTimeField(db_index=True, auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.person_beacon_id}"
