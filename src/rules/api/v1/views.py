@@ -9,10 +9,10 @@ from utils.drf.utils import inline_serializer
 
 class RuleViewSet(APIView):
     class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField(required=True)
         name = serializers.CharField(required=True, source="rule.name")
         message = serializers.CharField(required=True, source="rule.message")
         any = serializers.BooleanField(required=True, source="rule.any")
-        id = serializers.IntegerField(required=True)
         logical_conditions = inline_serializer(
             fields={
                 "id": serializers.IntegerField(required=True),
