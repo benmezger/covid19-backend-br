@@ -1,9 +1,10 @@
-from django.urls import reverse
+from datetime import datetime, timedelta
 
 from constance.test import override_config as constance_override_config
+from django.urls import reverse
 from freezegun import freeze_time
 
-from tracking.models import Person
+from tracking.models import Person, PersonEncounters
 
 
 @constance_override_config(INCUBATION_DAYS=14)
@@ -53,7 +54,7 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
     )
 
     old_encounters = [
-        person_eigth.beacon_id,
+        person_eight.beacon_id,
         person_nine.beacon_id,
     ]
 
@@ -75,12 +76,11 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
         ]
     }
 
-    # TODO: User authentication
     response = client.post(
         reverse("tracking:infected-persons"),
         data=payload,
         content_type="application/json",
-        HTTP_AUTHORIZATION=f"PersonToken {person.token}",
+        HTTP_AUTHORIZATION=f"PersonToken {person_one.token}",
     )
 
     assert PersonEncounters.objects.count() == 3
@@ -92,8 +92,8 @@ def test_infected_persons(client, db, make_person, make_person_encounters):
     assert response.status_code == 200
     assert response.json() == [
         {"beacon_id": person_two.beacon_id, "status": "C",},
-        {"beacon_id": person_five.beacon_id, "status": "S",},
-        {"beacon_id": person_six.beacon_id, "status": "C",},
+        {"beacon_id": person_five.beacon_id, "status": "C",},
+        {"beacon_id": person_six.beacon_id, "status": "S",},
     ]
 
 
@@ -104,10 +104,10 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
         beacon_id="5nk2nqnjfs26a183oqeflumfhhswzm616lo1", status="R"
     )
     person_three = make_person(
-        beacon_id="do8lrt4n5iny85eyw7gwbi7bcf6rcir0gsb7", status="C"
+        beacon_id="do8lrt4n5iny85eyw7gwbi7bcf6rcir0gsb7", status="U"
     )
     person_four = make_person(
-        beacon_id="77l91d6vnyohlhek4ynuj1rtsrftbdjiqdpa", status="U"
+        beacon_id="77l91d6vnyohlhek4ynuj1rtsrftbdjiqdpa", status="R"
     )
     person_five = make_person(
         beacon_id="fghcga6rl6jgjj31dfu9u5znefz1eqe1ielh", status="R"
@@ -117,6 +117,12 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
     )
     person_seven = make_person(
         beacon_id="0m97qdc3jf3f9w49lte9d1tio68q1fj74995", status="R"
+    )
+    person_eight = make_person(
+        beacon_id="j6h4uhfvcitfpsqwom0lyb3jpy5re2z3sw1q", status="S"
+    )
+    person_nine = make_person(
+        beacon_id="sozxr1zibcitra0a5be7amzjopndxmdfzcps", status="C"
     )
 
     make_person_encounters(
@@ -137,15 +143,13 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
         ],
     )
 
+    old_encounters = [
+        person_eight.beacon_id,
+        person_nine.beacon_id,
+    ]
+
     with freeze_time(datetime.now() - timedelta(days=14)):
         make_person_encounters(person_one.beacon_id, old_encounters)
-
-    assert PersonEncounters.objects.count() == 3
-
-    assert (
-        PersonEncounters.objects.filter(person_beacon_id=person_one.beacon_id).count()
-        == 2
-    )
 
     payload = {
         "persons_beacons_ids": [
@@ -155,11 +159,18 @@ def test_uninfected_persons(client, db, make_person, make_person_encounters):
         ]
     }
 
+    assert PersonEncounters.objects.count() == 3
+
+    assert (
+        PersonEncounters.objects.filter(person_beacon_id=person_one.beacon_id).count()
+        == 2
+    )
+
     response = client.post(
         reverse("tracking:infected-persons"),
         data=payload,
         content_type="application/json",
-        HTTP_AUTHORIZATION=f"PersonToken {person.token}",
+        HTTP_AUTHORIZATION=f"PersonToken {person_one.token}",
     )
 
     assert PersonEncounters.objects.count() == 3
