@@ -30,7 +30,7 @@ from tracking.models import Encounter, Person, RiskFactor, Symptom
     }
 )
 @api_view(("POST",))
-@permission_classes((AllowAny,))
+@permission_classes((IsAuthenticated,))
 def infected_persons(request):
     serializer = InfectedPersonsInputSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
