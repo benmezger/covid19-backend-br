@@ -12,9 +12,10 @@ from tracking.api.v1.serializers import (
     EncounterCountSerializer,
     EncounteredPeopleInputSerializer,
     EncounteredPeopleOutputSerializer,
+    PersonCreationOutputSerializer,
     PersonInputSerializer,
     PersonOutputSerializer,
-    PersonCreationOutputSerializer,
+    PersonStatusSerializer,
     PersonSymptomnsReportInputSerializer,
     RiskFactorSerializer,
     SymptomSerializer,
@@ -111,6 +112,14 @@ class PersonViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return Response(
             PersonCreationOutputSerializer(instance=person).data,
             status=status.HTTP_201_CREATED,
+        )
+
+    @swagger_auto_schema(responses={200: PersonStatusSerializer})
+    @action(("GET",), detail=False)
+    def status(self, request, *args, **kwargs):
+        person = request.user
+        return Response(
+            PersonStatusSerializer(instance=person).data, status=status.HTTP_200_OK,
         )
 
     @action(("POST",), detail=True)
