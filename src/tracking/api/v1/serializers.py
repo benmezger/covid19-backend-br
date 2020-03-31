@@ -14,6 +14,10 @@ class EncounterInputSerializer(serializers.Serializer):
     count = serializers.IntegerField(required=True)
 
 
+class EncounterCountSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
+
+
 class PersonInputSerializer(serializers.Serializer):
     age = serializers.IntegerField(required=False)
     sex = serializers.CharField(required=False)
