@@ -11,19 +11,22 @@ def test_encounter_create(client, db, make_person):
     person_two = make_person(beacon_id="a488-45bf-afb3-9e9b1baabd49-146d50f3")
     person_three = make_person(beacon_id="45bf-afb3-9e9b1baabd49-146d50f3-a488")
 
+    start_date = datetime.now() - timedelta(hours=13)
+    end_date = datetime.now()
+
     payload = [
         {
             "person_two_beacon_id": "a488-45bf-afb3-9e9b1baabd49-146d50f3",
-            "start_date": 1584905619.222456,
-            "end_date": 1584905632.263027,
+            "start_date": start_date,
+            "end_date": end_date,
             "duration": 20,
             "min_distance": 40.0,
             "count": 1,
         },
         {
             "person_two_beacon_id": "45bf-afb3-9e9b1baabd49-146d50f3-a488",
-            "start_date": 1584905619.222456,
-            "end_date": 1584905632.263027,
+            "start_date": start_date,
+            "end_date": end_date,
             "duration": 10,
             "min_distance": 10.0,
             "count": 1,
@@ -48,19 +51,22 @@ def test_encounter_create_unauthenticated(client, db, make_person):
     person_two = make_person(beacon_id="a488-45bf-afb3-9e9b1baabd49-146d50f3")
     person_three = make_person(beacon_id="45bf-afb3-9e9b1baabd49-146d50f3-a488")
 
+    start_date = datetime.now() - timedelta(hours=13)
+    end_date = datetime.now()
+
     payload = [
         {
             "person_two_beacon_id": "a488-45bf-afb3-9e9b1baabd49-146d50f3",
-            "start_date": 1584905619.222456,
-            "end_date": 1584905632.263027,
+            "start_date": start_date,
+            "end_date": end_date,
             "duration": 20,
             "min_distance": 40.0,
             "count": 1,
         },
         {
             "person_two_beacon_id": "45bf-afb3-9e9b1baabd49-146d50f3-a488",
-            "start_date": 1584905619.222456,
-            "end_date": 1584905632.263027,
+            "start_date": start_date,
+            "end_date": end_date,
             "duration": 10,
             "min_distance": 10.0,
             "count": 1,

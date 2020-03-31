@@ -4,8 +4,8 @@ from tracking.services import encounter_create
 
 
 def test_encounter_create(make_person, make_user):
-    start_date = datetime.now().timestamp()
-    end_date = (datetime.now() + timedelta(hours=10)).timestamp()
+    start_date = datetime.now()
+    end_date = datetime.now() + timedelta(hours=10)
 
     person_one = make_person(beacon_id="123123123210")
     person_two = make_person(beacon_id="0129302909")
@@ -22,8 +22,8 @@ def test_encounter_create(make_person, make_user):
 
     assert encounter.person_one == person_one
     assert encounter.person_two == person_two
-    assert encounter.start_date == datetime.fromtimestamp(start_date)
-    assert encounter.end_date == datetime.fromtimestamp(end_date)
+    assert encounter.start_date == start_date
+    assert encounter.end_date == end_date
     assert encounter.min_distance == 10.0
     assert encounter.duration == 10
     assert encounter.count == 1
