@@ -12,8 +12,8 @@ def test_encounter_create(make_person, make_user):
     person_two = make_person(beacon_id="0129302909")
 
     for _ in range(2):
-        start_date = datetime.now().timestamp()
-        end_date = (datetime.now() + timedelta(hours=10)).timestamp()
+        start_date = datetime.now()
+        end_date = datetime.now() + timedelta(hours=10)
 
         encounters_data.append(
             OrderedDict(
