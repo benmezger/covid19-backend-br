@@ -1,0 +1,12 @@
+variable "region" {}
+variable "project_name" {}
+variable "environment" {}
+variable "vpc_id" {}
+variable "db_storage_size" {}
+variable "db_instance_type" {}
+variable "security_group" {}
+variable "subnet_1_id" {}
+variable "subnet_2_id" {}
+variable "availability_zone" {}
+variable "db_username" {}
+variable "db_password" {}

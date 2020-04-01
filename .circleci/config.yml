@@ -12,6 +12,25 @@ references:
                   POSTGRES_USER: postgres
                   POSTGRES_PASSWORD: postgres
                   POSTGRES_DB: app
+    create-aws-credentials: &create-aws-credentials
+        run:
+          name: Create AWS credentials manually
+          command: |
+              mkdir ~/.aws
+              touch ~/.aws/config
+              chmod 600 ~/.aws/config
+              echo "[profile covidapp]" > ~/.aws/config
+              echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/config
+              echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/config
+
+    install-aws-cli: &install-aws-cli
+        run:
+          name: Installing awsebcli
+          command: |
+                sudo pip install --upgrade setuptools awscli
+                sudo apt-get install jq
+                curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy | sudo tee /usr/bin/ecs-deploy
+                sudo chmod +x /usr/bin/ecs-deploy
 
     install_python_requirements: &install_python_requirements
         run:
@@ -58,6 +77,16 @@ references:
               git push git@heroku.com:$HEROKU_APP_NAME_STAGING.git $CIRCLE_SHA1:refs/heads/master
               heroku run python src/manage.py migrate --noinput --app $HEROKU_APP_NAME_STAGING
 
+    build-push-deploy-staging: &build-push-deploy-staging
+        run:
+          name: Build, Push and Deploy Staging
+          command: |
+              eval $(aws ecr get-login --region us-west-2 | sed 's|https://||' | sed 's|-e none ||')
+              docker build -t covidapp-staging .
+              docker tag covidapp-staging:latest $AWS_ECR_STAGING:latest
+              docker push $AWS_ECR_STAGING:latest
+              ecs-deploy -c $AWS_CLUSTER_STAGING -n $AWS_WEB_SERVICE_STAGING -i $AWS_ECR_STAGING:latest -t $AWS_ECS_TIMEOUT -r $AWS_REGION
+
     deploy_heroku: &deploy_heroku
         run:
           name: Deploy
@@ -85,6 +114,13 @@ jobs:
             - *restore_repo
             - *install_heroku_cli
             - *deploy_heroku_staging
+    aws-staging:
+        <<: *container_config
+        steps:
+            - *restore_repo
+            - <<: *create-aws-credentials
+            - <<: *install-aws-cli
+            - <<: *build-push-deploy-staging
     prod:
         <<: *container_config
         steps:
@@ -100,6 +136,18 @@ workflows:
                 filters:
                     tags:
                         ignore: /^v.*/
+    untagged-aws-build:
+        jobs:
+            - test:
+                filters:
+                    branches:
+                        only: aws-staging
+            - aws-staging:
+                requires:
+                    - test
+                filters:
+                    branches:
+                        only: aws-staging
     untagged-build:
         jobs:
             - test:
