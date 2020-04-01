@@ -49,10 +49,6 @@
       {
         "name": "APP_DOMAIN",
         "value": "${app_domain}"
-      },
-      {
-        "name": "EMAIL_FROM",
-        "value": "${email_from}"
       }
     ]
   }

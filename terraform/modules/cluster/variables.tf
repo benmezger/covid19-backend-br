@@ -21,5 +21,4 @@ variable "domains" {}
 variable "app_bucket" {}
 variable "database" {}
 variable "backend_secret_key" {}
-variable "backend_email_from" {}
 variable "public_key" {}
