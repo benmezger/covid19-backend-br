@@ -1,7 +1,7 @@
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 from notification.models import Notification
 from notification import services
@@ -16,7 +16,7 @@ class NotificationViewSet(
 ):
     queryset = Notification.objects.all()
     serializer_class = NotificationOutputSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         serializer_map = {
@@ -28,7 +28,10 @@ class NotificationViewSet(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        notification = services.notification_create(**serializer.validated_data)
+        person = request.user
+        notification = services.notification_create(
+            person_beacon_id=person.beacon_id, **serializer.validated_data
+        )
 
         return Response(
             NotificationOutputSerializer(instance=notification).data,
