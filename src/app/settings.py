@@ -153,6 +153,10 @@ REST_FRAMEWORK = {
     ],
 }
 
+# CORS allow all
+CORS_ORIGIN_ALLOW_ALL = True
+
+
 # Auth
 
 AUTH_USER_MODEL = "users.User"
