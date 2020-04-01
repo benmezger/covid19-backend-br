@@ -81,7 +81,7 @@ references:
         run:
           name: Build, Push and Deploy Staging
           command: |
-              eval $(aws ecr get-login --region us-west-2 | sed 's|https://||' | sed 's|-e none ||')
+              eval $(aws ecr get-login --region $AWS_REGION | sed 's|https://||' | sed 's|-e none ||')
               docker build -t covidapp-staging .
               docker tag covidapp-staging:latest $AWS_ECR_STAGING:latest
               docker push $AWS_ECR_STAGING:latest
@@ -120,6 +120,7 @@ jobs:
             - *restore_repo
             - <<: *create-aws-credentials
             - <<: *install-aws-cli
+            - setup_remote_docker
             - <<: *build-push-deploy-staging
     prod:
         <<: *container_config
