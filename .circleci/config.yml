@@ -120,6 +120,7 @@ jobs:
             - *restore_repo
             - <<: *create-aws-credentials
             - <<: *install-aws-cli
+            - setup_remote_docker
             - <<: *build-push-deploy-staging
     prod:
         <<: *container_config
