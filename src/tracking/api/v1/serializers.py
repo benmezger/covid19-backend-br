@@ -5,7 +5,6 @@ from tracking.models import Person, RiskFactor, Symptom
 
 
 class EncounterInputSerializer(serializers.Serializer):
-    person_one_beacon_id = serializers.CharField()
     person_two_beacon_id = serializers.CharField()
     start_date = serializers.FloatField()
     end_date = serializers.FloatField()
@@ -13,6 +12,10 @@ class EncounterInputSerializer(serializers.Serializer):
     duration = serializers.IntegerField()
     city = serializers.CharField(default=None)
     count = serializers.IntegerField(required=True)
+
+
+class EncounterCountSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
 
 
 class PersonInputSerializer(serializers.Serializer):
@@ -31,6 +34,15 @@ class PersonOutputSerializer(serializers.ModelSerializer):
         fields = ("id", "age", "sex", "beacon_id", "status")
 
 
+class PersonStatusSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
+class PersonCreationOutputSerializer(PersonOutputSerializer):
+    class Meta(PersonOutputSerializer.Meta):
+        fields = PersonOutputSerializer.Meta.fields + ("token",)
+
+
 class RiskFactorSerializer(serializers.ModelSerializer):
     class Meta:
         model = RiskFactor
@@ -47,11 +59,11 @@ class PersonSymptomnsReportInputSerializer(serializers.Serializer):
     symptoms_ids = serializers.ListField(child=serializers.IntegerField())
 
 
-class InfectedPersonsInputSerializer(serializers.Serializer):
-    persons_beacons_ids = serializers.ListField(child=serializers.CharField())
+class EncounteredPeopleInputSerializer(serializers.Serializer):
+    people_beacons_ids = serializers.ListField(child=serializers.CharField())
 
 
-class InfectedPersonsOutputSerializer(serializers.ModelSerializer):
+class EncounteredPeopleOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ("beacon_id", "status")

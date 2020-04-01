@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext as _
 from django_extensions.db.models import TimeStampedModel
 
+from authentication.models import PersonToken
 from .managers import EncounterManager
 
 
@@ -40,6 +42,15 @@ class Person(models.Model):
     def __str__(self):
         return f"Status: {self.get_status_display()}"
 
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def token(self):
+        token, _ = PersonToken.objects.get_or_create(person=self)
+        return token.key
+
 
 class PersonStatusChange(TimeStampedModel):
     person = models.ForeignKey(
@@ -69,7 +80,7 @@ class PersonRiskFactor(TimeStampedModel):
         "tracking.Person", on_delete=models.CASCADE, related_name="risk_factors"
     )
     risk_factor = models.ForeignKey(
-        "tracking.RiskFactor", on_delete=models.CASCADE, related_name="persons"
+        "tracking.RiskFactor", on_delete=models.CASCADE, related_name="people"
     )
 
     class Meta:
@@ -113,7 +124,7 @@ class PersonSymptomReport(TimeStampedModel):
         "tracking.Person", on_delete=models.CASCADE, related_name="symptoms_reports"
     )
     symptom = models.ForeignKey(
-        "tracking.Symptom", on_delete=models.CASCADE, related_name="persons"
+        "tracking.Symptom", on_delete=models.CASCADE, related_name="people"
     )
 
     def __str__(self):
@@ -147,3 +158,16 @@ class Encounter(models.Model):
 
     def __str__(self):
         return f"{self.person_one} - {self.person_two}"
+
+
+class PersonEncounters(models.Model):
+    """
+    Redudant date but mainly used to speed up the query
+    """
+
+    person_beacon_id = models.CharField(max_length=36, db_index=True)
+    encountered_people_beacons_ids = ArrayField(models.CharField(max_length=36))
+    date = models.DateTimeField(db_index=True, auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.person_beacon_id}"

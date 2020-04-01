@@ -21,6 +21,7 @@ urlpatterns = [
     path("", include("notification.urls")),
     path("", include("rules.urls")),
     path("", include("tracking.urls")),
+    path("", include("subscribe.urls")),
     # Enables the DRF browsable API page
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("docs/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
