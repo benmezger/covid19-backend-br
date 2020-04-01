@@ -5,5 +5,8 @@ from subscribe.models import Subscribe
 
 @admin.register(Subscribe)
 class SubscribeAdmin(admin.ModelAdmin):
-    list_display = ("email", "created")
-    search_fields = ("email",)
+    list_display = ("name", "email", "created")
+    search_fields = (
+        "name",
+        "email",
+    )

@@ -9,7 +9,10 @@ class SubscribeView(viewsets.ViewSet, generics.CreateAPIView):
     class InputSerializer(serializers.ModelSerializer):
         class Meta:
             model = Subscribe
-            fields = ("email",)
+            fields = (
+                "name",
+                "email",
+            )
 
     permission_classes = (AllowAny,)
     serializer_class = InputSerializer

@@ -7,7 +7,8 @@ from rest_framework import status
 def test_request_subscribe_form(drf_client, subscribe_factory):
     subscribe = subscribe_factory.build()
     request = drf_client.post(
-        reverse("subscribe-list"), data={"email": subscribe.email}
+        reverse("subscribe-list"),
+        data={"email": subscribe.email, "name": subscribe.name},
     )
 
     assert request.status_code == status.HTTP_201_CREATED
