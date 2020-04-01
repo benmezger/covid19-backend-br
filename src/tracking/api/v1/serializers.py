@@ -6,8 +6,8 @@ from tracking.models import Person, RiskFactor, Symptom
 
 class EncounterInputSerializer(serializers.Serializer):
     person_two_beacon_id = serializers.CharField()
-    start_date = serializers.FloatField()
-    end_date = serializers.FloatField()
+    start_date = serializers.DateTimeField()
+    end_date = serializers.DateTimeField()
     min_distance = serializers.FloatField()
     duration = serializers.IntegerField()
     city = serializers.CharField(default=None)
