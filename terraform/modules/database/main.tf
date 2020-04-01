@@ -17,8 +17,8 @@ resource "aws_db_instance" "app_db" {
   final_snapshot_identifier = replace("${var.project_name}-${var.environment}-final-snapshot", "_", "-")
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "app"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "app"
   }
 }

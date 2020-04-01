@@ -48,8 +48,8 @@ resource "aws_ecs_task_definition" "main_td" {
   container_definitions = data.template_file.main_container.rendered
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = var.alias_name
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = var.alias_name
   }
 }

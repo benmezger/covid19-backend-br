@@ -4,8 +4,8 @@ resource "aws_vpc" "vpc" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-vpc"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }

@@ -24,9 +24,9 @@ resource "aws_key_pair" "ssh_access" {
   public_key = var.public_key
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "cluster"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "cluster"
   }
 }
 

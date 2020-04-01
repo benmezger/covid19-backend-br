@@ -6,15 +6,11 @@ provider "aws" {
 // We can't use interpolation in terraform block :(
 terraform {
   backend "s3" {
-    # Replace this with your Bucket name!
-    #bucket = "#####(replace) tfstate bucket name. ${var.project_name}-terraform-state#####"
-    bucket = "ckltftest-terraform-state"
-    # Replace this with your DynamoDB table name!
-    #dynamodb_table = "#####(replace) tflocks table name. ${var.project_name}-terraform-locks#####"
-    dynamodb_table = "ckltftest-terraform-locks"
+    bucket = "covidapp-terraform-state"
+    dynamodb_table = "covidapp-terraform-locks"
+
     key = "terraform.tfstate"
-    #region = "#####(replace) aws region. ie: us-west-2#####"
-    region = "us-west-1"
+    region = "us-east-2"
     encrypt = true
   }
 }

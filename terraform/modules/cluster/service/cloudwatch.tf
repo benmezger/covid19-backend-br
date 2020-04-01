@@ -3,8 +3,8 @@ resource "aws_cloudwatch_log_group" "logs" {
   retention_in_days = var.log_retention
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = var.alias_name
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = var.alias_name
   }
 }

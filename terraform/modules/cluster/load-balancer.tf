@@ -7,9 +7,9 @@ resource "aws_lb" "lb" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "app"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "app"
   }
 }
 

@@ -14,19 +14,19 @@ resource "aws_autoscaling_group" "asg" {
   }
 
   tag {
-    key = "ckl:project"
+    key = "covidapp:project"
     propagate_at_launch = true
     value = var.project_name
   }
 
   tag {
-    key = "ckl:environment"
+    key = "covidapp:environment"
     propagate_at_launch = true
     value = var.environment
   }
 
   tag {
-    key = "ckl:alias"
+    key = "covidapp:alias"
     propagate_at_launch = true
     value = "${var.project_name}-${var.environment}-instance"
   }

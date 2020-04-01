@@ -1,8 +1,8 @@
 resource "aws_iam_user" "deploy-user" {
   name = "${var.project_name}_deploy_user_${var.environment}"
   tags = {
-    "ckl:project" = var.project_name
-    "ckl:alias" = "app"
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "app"
   }
 }
 

@@ -2,8 +2,8 @@ resource "aws_iam_role" "ecs-service-role" {
   name = "${var.project_name}-ECS-Service-Role-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.ecs-service-policy.json
   tags = {
-    "ckl:project" = var.project_name
-    "ckl:alias" = "deploy-user"
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "deploy-user"
   }
 }
 

@@ -4,9 +4,9 @@ resource "aws_internet_gateway" "igw" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-internet-gateway"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }
 
@@ -21,9 +21,9 @@ resource "aws_route_table" "rt" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-igw-route-table"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }
 

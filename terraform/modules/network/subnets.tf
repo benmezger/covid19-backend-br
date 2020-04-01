@@ -7,9 +7,9 @@ resource "aws_subnet" "private_subnet_1" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-private-subnet"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }
 
@@ -21,9 +21,9 @@ resource "aws_subnet" "private_subnet_2" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-private-subnet-2"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }
 
@@ -36,9 +36,9 @@ resource "aws_subnet" "public_subnet_1" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}-public-subnet"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }
 
@@ -50,8 +50,8 @@ resource "aws_subnet" "public_subnet_2" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}--public-subnet-2"
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }

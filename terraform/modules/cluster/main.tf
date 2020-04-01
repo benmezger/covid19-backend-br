@@ -2,9 +2,9 @@ resource "aws_ecs_cluster" "cluster" {
   name = "${var.project_name}-${var.environment}"
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "cluster"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "cluster"
   }
 
   depends_on = [var.ecs_instance_role]

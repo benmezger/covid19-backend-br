@@ -25,9 +25,9 @@ resource "aws_security_group" "public_security_group" {
   }
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }
 
@@ -53,9 +53,9 @@ resource "aws_security_group" "private_security_group" {
   }
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }
 
@@ -81,8 +81,8 @@ resource "aws_security_group" "database_security_group" {
   }
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "network"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "network"
   }
 }

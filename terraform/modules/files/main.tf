@@ -3,8 +3,8 @@ resource "aws_s3_bucket" "app_bucket" {
   acl = "public-read"
 
   tags = {
-    "ckl:environment" = var.environment
-    "ckl:project" = var.project_name
-    "ckl:alias" = "app"
+    "covidapp:environment" = var.environment
+    "covidapp:project" = var.project_name
+    "covidapp:alias" = "app"
   }
 }
