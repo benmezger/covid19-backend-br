@@ -28,23 +28,13 @@ resource "aws_lb_listener" "http_listener" {
   port = "80"
   protocol = "HTTP"
 
-  # TODO: redirect to HTTPS when configured
-  # default_action {
-  #   type = "redirect"
-
-  #   redirect {
-  #     port        = "443"
-  #     protocol    = "HTTPS"
-  #     status_code = "HTTP_301"
-  #   }
-  # }
   default_action {
-    type = "fixed-response"
+    type = "redirect"
 
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "Pong"
-      status_code  = "200"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 }
