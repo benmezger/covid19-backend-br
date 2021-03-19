@@ -9,7 +9,7 @@ Pillow==7.0.0
 django-versatileimagefield==2.0
 
 # REST Framework
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 django-cors-headers==3.2.1
 
 # Database
